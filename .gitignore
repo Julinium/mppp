@@ -1,4 +1,4 @@
 .venv/
 .env
 scraper/migrations/
-# scraper/py__cache
+scraper/__pycache__
