@@ -1,2 +1,4 @@
 .venv/
-.env*
+.env
+scraper/migrations/
+# scraper/py__cache
