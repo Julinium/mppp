@@ -107,7 +107,8 @@ def getLinks(back_days=C.PORTAL_DDL_PAST_DAYS):
         Each element represents [portal id, organism acronym, published date] of a Consultation.
         The first two values can be used to obtain a working link to the Consultaion on the portal.
     """
-    url = "https://www.marchespublics.gov.ma/index.php?page=entreprise.EntrepriseAdvancedSearch&searchAnnCons"
+    
+    url = f"{C.SITE_INDEX}?page=entreprise.EntrepriseAdvancedSearch&searchAnnCons"
     driver = helper.getDriver(url)
     
     links = []
@@ -160,11 +161,11 @@ def getLinks(back_days=C.PORTAL_DDL_PAST_DAYS):
             
         try : next_page_button = driver.find_element(By.ID, "ctl0_CONTENU_PAGE_resultSearch_PagerTop_ctl2")
         except: next_page_button = None
-            
+
     if driver: driver.quit()
     
     if len(links) != int(count):
-        helper.printMessage('ERROR', 'linker.getLinks', f'Discrepancy between links count {len(links):04} and items number {count:04}. Links list was emptied: ')
-        links = []
+        helper.printMessage('ERROR', 'linker.getLinks', f'Discrepancy between links count {len(links):04} and items number {count:04}.\n')
+        # links = []
     
     return links
