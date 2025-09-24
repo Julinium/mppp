@@ -260,7 +260,7 @@ class Tender(models.Model):
     #     self.variant = False
     #     self.category = None
 
-        return super().save(*args, **kwargs)
+        # return super().save(*args, **kwargs)
 
 
 class Type(models.Model):
