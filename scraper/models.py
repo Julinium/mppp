@@ -109,23 +109,26 @@ class Lot(models.Model):
     number = models.SmallIntegerField(blank=True, null=True)
     title = models.CharField(max_length=512)
     description = models.CharField(max_length=512, blank=True, null=True)
+    
     estimate = models.DecimalField(max_digits=16, decimal_places=2, blank=True, null=True)
     bond = models.DecimalField(max_digits=16, decimal_places=2, blank=True, null=True)
+    plans_price = models.DecimalField(max_digits=16, decimal_places=2, blank=True, null=True)
     reserved = models.BooleanField(blank=True, null=True)
     variant = models.BooleanField(blank=True, null=True)
-    plans_price = models.DecimalField(max_digits=16, decimal_places=2, blank=True, null=True)
     category = models.ForeignKey(Category, on_delete=models.DO_NOTHING, related_name="lots", db_column='category', blank=True, null=True)
+    
     tender = models.ForeignKey('Tender', on_delete=models.DO_NOTHING, related_name="lots", db_column='tender', blank=True, null=True)
     agrements = models.ManyToManyField('Agrement', through='RelAgrementLot', related_name='lots')
     qualifs = models.ManyToManyField('Qualif', through='RelQualifLot', related_name='lots')
 
     class Meta:
         db_table = 'lot'
+        ordering = ['number']
 
 
 class Meeting(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    time = models.DateTimeField(blank=True, null=True)
+    when = models.DateTimeField(blank=True, null=True)
     description = models.CharField(max_length=512, blank=True, null=True)
     lot = models.ForeignKey(Lot, on_delete=models.DO_NOTHING, related_name="meetings", db_column='lot', blank=True, null=True)
 
@@ -158,7 +161,7 @@ class Qualif(models.Model):
     short = models.CharField(max_length=32, blank=True, null=True)
     name = models.CharField(max_length=512, blank=True, null=True)
     domain = models.CharField(max_length=32, blank=True, null=True)
-    degree = models.CharField(max_length=8, blank=True, null=True)
+    classe = models.CharField(max_length=8, blank=True, null=True)
     description = models.CharField(max_length=128, blank=True, null=True)
 
     class Meta:
@@ -212,6 +215,15 @@ class Tender(models.Model):
     reference = models.CharField(max_length=128, blank=True, null=True)
     published = models.DateTimeField(blank=True, null=True)
     deadline = models.DateTimeField(blank=True, null=True)
+
+    lots_count = models.SmallIntegerField(blank=True, null=True)
+    estimate = models.DecimalField(max_digits=16, decimal_places=2, blank=True, null=True)
+    bond = models.DecimalField(max_digits=16, decimal_places=2, blank=True, null=True)
+    plans_price = models.DecimalField(max_digits=16, decimal_places=2, blank=True, null=True)
+    reserved = models.BooleanField(blank=True, null=True)
+    variant = models.BooleanField(blank=True, null=True)
+    category = models.ForeignKey(Category, on_delete=models.DO_NOTHING, related_name="tenders", db_column='category', blank=True, null=True)
+
     location = models.CharField(max_length=256, blank=True, null=True)
     ebid = models.SmallIntegerField(blank=True, null=True, db_comment='1: Required, 0: Not required, Else: NA')
     esign = models.SmallIntegerField(blank=True, null=True, db_comment='1: Required, 0: Not required, Else: NA')
@@ -224,7 +236,7 @@ class Tender(models.Model):
     contact_phone = models.CharField(max_length=64, blank=True, null=True)
     contact_email = models.CharField(max_length=64, blank=True, null=True)
     contact_fax = models.CharField(max_length=64, blank=True, null=True)
-    created = models.DateTimeField(blank=True, null=True)
+    created = models.DateTimeField(blank=True, null=True, auto_now_add=True)
     updated = models.DateTimeField(blank=True, null=True)
     cancelled = models.BooleanField(blank=True, null=True)
     link = models.CharField(max_length=512, blank=True, null=True)
@@ -232,9 +244,23 @@ class Tender(models.Model):
     procedure = models.ForeignKey(Procedure, on_delete=models.DO_NOTHING, db_column='procedure', blank=True, null=True)
     client = models.ForeignKey(Client, on_delete=models.DO_NOTHING, db_column='client', blank=True, null=True)
     type = models.ForeignKey('Type', on_delete=models.DO_NOTHING, db_column='type', blank=True, null=True)
-
+    domains = models.ManyToManyField('Domain', through='RelDomainTender', related_name='tenders')
+    
     class Meta:
         db_table = 'tender'
+    
+    def __str__():
+        return self.title
+
+    # def save(self, , *args, **kwargs):
+    #     self.estimate = 0
+    #     self.bond = 0
+    #     self.plans_price = 0
+    #     self.reserved = False
+    #     self.variant = False
+    #     self.category = None
+
+        return super().save(*args, **kwargs)
 
 
 class Type(models.Model):
