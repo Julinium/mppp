@@ -5,7 +5,6 @@ bs4==0.0.2
 certifi==2025.8.3
 charset-normalizer==3.4.3
 Django==5.2.6
-django-rest-framework==0.1.0
 djangorestframework==3.16.1
 dotenv==0.9.9
 h11==0.16.0
