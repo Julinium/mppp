@@ -2,3 +2,7 @@
 .env
 scraper/migrations/
 scraper/__pycache__
+.env.creds.json
+.env.ua.json
+exports/
+media/

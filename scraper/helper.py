@@ -3,29 +3,31 @@ from datetime import datetime, timezone
 from decimal import Decimal, InvalidOperation
 
 from selenium import webdriver
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+# from sqlalchemy import create_engine
+# from sqlalchemy.orm import sessionmaker
 
 import constants as C
 # import helper
 
 
 
-def printMessage(level='INFO', raiser='Main', message='!!! Empty Message !!!'):
+def printMessage(level='INFO', raiser='Main', message='!!! Empty Message !!!', before=0, after=0):
     """
     # Synopsis:
     Prints a message to the stdout, tagged with a level and current datetime.
 
     # Params:
         # level:    Level of the message.
-        # raiser:   Module or Function raising the message
+        # raiser:   Module or Function raising the message.
         # message:  Text to print.
+        # before: Empty lines to print before the message.
+        # after: Empty lines to print after the message.
 
     # Return: nothing
     """
 
     if level in C.LOGS_LEVELS and C.LOGS_LEVELS[level] >= C.VERBOSITY:
-        print(f'[{datetime.now(timezone.utc).strftime(C.LOG_TIME_FORMAT)}][{level}][{raiser}] {message}')
+        print(f'{before * "\n"}[{datetime.now(timezone.utc).strftime(C.LOG_TIME_FORMAT)}][{level}][{raiser}] {message}{after * "\n"}')
 
 
 def money2Float(texte: str) -> Decimal:
@@ -202,7 +204,7 @@ def getDriver(url=''):
     return driver
 
 
-def getEngine_Local():
+# def getEngine_Local():
     """
     # Synopsis:
         Connects to local database engine.
@@ -211,17 +213,17 @@ def getEngine_Local():
     # Return:
         Engine: Instance of SQLAlchemy databse engine, which can receive connexions.
     """
-    engine = None
-    try:
-        printMessage('DEBUG', 'helper.getEngine_Local', f'Connecting to loacl database engine {C.DB_NAME}... ')
-        engine = create_engine(f'postgresql://{C.DB_USER}:{C.DB_PASS}@{C.DB_SERVER}:{C.DB_PORT}/{C.DB_NAME}')
-        printMessage('INFO', 'helper.getEngine_Local', f'=== Connected to local database {C.DB_NAME}\n\n')
-    except Exception as x:
-        printMessage('ERROR', 'getEngine_Local', f'Exception while connecting to local database engine: {str(x)}\n\n')
-    return engine
+    # engine = None
+    # try:
+    #     printMessage('DEBUG', 'helper.getEngine_Local', f'Connecting to loacl database engine {C.DB_NAME}... ')
+    #     engine = create_engine(f'postgresql://{C.DB_USER}:{C.DB_PASS}@{C.DB_SERVER}:{C.DB_PORT}/{C.DB_NAME}')
+    #     printMessage('INFO', 'helper.getEngine_Local', f'=== Connected to local database {C.DB_NAME}\n\n')
+    # except Exception as x:
+    #     printMessage('ERROR', 'getEngine_Local', f'Exception while connecting to local database engine: {str(x)}\n\n')
+    # return engine
 
 
-def getSession(engine=None):
+# def getSession(engine=None):
     """
     # Synopsis:
         Opens a database session on a database engine.
@@ -230,16 +232,16 @@ def getSession(engine=None):
     # Return:
         Session: an instance of a database session on the given engine.
     """
-    if engine == None: engine = getEngine_Local()
-    session = None
-    try:
-        printMessage('DEBUG', 'helper.getSession', 'Opening a session on database engine ... ')
-        Session = sessionmaker(bind=engine)
-        session = Session()
-        printMessage('INFO', 'helper.getSession', '=== Opened a session on database engine.')
-    except Exception as x:
-        printMessage('ERROR', 'getSession', f'Exception while opening a session on database engine: {str(x)}')
-    return session
+    # if engine == None: engine = getEngine_Local()
+    # session = None
+    # try:
+    #     printMessage('DEBUG', 'helper.getSession', 'Opening a session on database engine ... ')
+    #     Session = sessionmaker(bind=engine)
+    #     session = Session()
+    #     printMessage('INFO', 'helper.getSession', '=== Opened a session on database engine.')
+    # except Exception as x:
+    #     printMessage('ERROR', 'getSession', f'Exception while opening a session on database engine: {str(x)}')
+    # return session
 
 
 def importLinks(file=f'{C.SELENO_DIR}/exports/links.csv'):
@@ -251,14 +253,18 @@ def importLinks(file=f'{C.SELENO_DIR}/exports/links.csv'):
     # Return:
         Links: List of the links contained in the file.
     """
+    printMessage('INFO', 'helper.importLinks', f'Importing links from file {file.replace(C.SELENO_DIR, "")}\n')
     links = []
     try:
         with open(file, newline='') as csvfile:
             reader = csv.reader(csvfile)
             for row in reader:
                 links.append(row)
-    except Exception as x:
-        printMessage('ERROR', 'helper.importLinks', f'Exception while importing file: {str(x)}')
+    except:
+        printMessage('ERROR', 'helper.importLinks', f'Exception while importing links from file:\n')
+        traceback.print_exc()
+    printMessage('INFO', 'helper.importLinks', f'Imported {len(links)} links from file.\n')
+    
     return links
 
 
