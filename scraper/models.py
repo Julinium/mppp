@@ -112,7 +112,7 @@ class Lot(models.Model):
     
     estimate = models.DecimalField(max_digits=16, decimal_places=2, blank=True, null=True)
     bond = models.DecimalField(max_digits=16, decimal_places=2, blank=True, null=True)
-    plans_price = models.DecimalField(max_digits=16, decimal_places=2, blank=True, null=True)
+    # plans_price = models.DecimalField(max_digits=16, decimal_places=2, blank=True, null=True)
     reserved = models.BooleanField(blank=True, null=True)
     variant = models.BooleanField(blank=True, null=True)
     category = models.ForeignKey(Category, on_delete=models.DO_NOTHING, related_name="lots", db_column='category', blank=True, null=True)
@@ -202,7 +202,7 @@ class Sample(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     time = models.DateTimeField(blank=True, null=True)
     description = models.CharField(max_length=512, blank=True, null=True)
-    lot = models.ForeignKey(Lot, on_delete=models.DO_NOTHING, db_column='lot', blank=True, null=True)
+    lot = models.ForeignKey(Lot, on_delete=models.DO_NOTHING, related_name="samples", db_column='lot', blank=True, null=True)
 
     class Meta:
         db_table = 'sample'
@@ -287,7 +287,7 @@ class Visit(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     time = models.DateTimeField(blank=True, null=True)
     description = models.CharField(max_length=512, blank=True, null=True)
-    lot = models.ForeignKey(Lot, on_delete=models.DO_NOTHING, db_column='lot', blank=True, null=True)
+    lot = models.ForeignKey(Lot, on_delete=models.DO_NOTHING, related_name="visits", db_column='lot', blank=True, null=True)
 
     class Meta:
         db_table = 'visit'

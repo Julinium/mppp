@@ -1,0 +1,153 @@
+{
+    "chrono": "2025-001",
+    "title": "Highway Expansion Project",
+    "reference": "TEND-2025-001",
+    "published": "2025-09-01T08:00:00Z",
+    "deadline": "2025-10-15T17:00:00Z",
+    "lots_count": 3,
+    "estimate": 15000000.00,
+    "bond": 500000.00,
+    "plans_price": 2500.00,
+    "reserved": false,
+    "variant": true,
+    "category": {
+        "label": "Construction",
+        "rank": 1,
+        "description": "Civil engineering and construction projects"
+    },
+    "location": "Northwest Region, Country XYZ",
+    "ebid": 1,
+    "esign": 0,
+    "size_read": "150 MB",
+    "size_bytes": 157286400,
+    "address_withdrawal": "123 Main St, Capital City, XYZ",
+    "address_bidding": "456 Procurement Ave, Capital City, XYZ",
+    "address_opening": "789 Public Hall, Capital City, XYZ",
+    "contact_name": "John Doe",
+    "contact_phone": "+123-456-7890",
+    "contact_email": "procurement@agency.xyz",
+    "contact_fax": "+123-456-7891",
+    "created": "2025-09-01T08:00:00Z",
+    "updated": "2025-09-20T14:30:00Z",
+    "cancelled": false,
+    "link": "https://procurement.agency.xyz/tenders/2025-001",
+    "acronym": "HXP",
+    "mode": {
+        "short": "OPEN",
+        "name": "Open Procedure",
+        "description": "Open bidding process"
+    },
+    "procedure": {
+        "short": "COMP",
+        "name": "Competitive Procedure",
+        "description": "Competitive tendering with multiple bidders"
+    },
+    "client": {
+        "short": "GovXYZ",
+        "name": "Ministry of Transportation",
+        "ministery": "MOT",
+        "description": "Government agency responsible for transport infrastructure"
+    },
+    "type": {
+        "short": "INFRA",
+        "name": "Infrastructure",
+        "description": "Public infrastructure projects"
+    },
+    "domains": [
+        {
+            "short": "ROAD",
+            "name": "Road Construction",
+            "description": "Highway and road development"
+        },
+        {
+            "short": "BRIDGE",
+            "name": "Bridge Construction",
+            "description": "Bridge building and maintenance"
+        }
+    ],
+    "lots": [
+        {
+            "number": 1,
+            "title": "Highway Section A",
+            "description": "Construction of 10km highway segment",
+            "estimate": 6000000.00,
+            "bond": 200000.00,
+            "plans_price": 1000.00,
+            "reserved": false,
+            "variant": true,
+            "category": {
+                "label": "Roads",
+                "rank": 2,
+                "description": "Road construction and maintenance"
+            },
+            "agrements": [
+                {
+                    "short": "CERT1",
+                    "name": "Road Safety Certification",
+                    "description": "Certification for road safety standards"
+                },
+                {
+                    "short": "ENV1",
+                    "name": "Environmental Compliance",
+                    "description": "Environmental impact certification"
+                }
+            ],
+            "qualifs": [
+                {
+                    "short": "QUAL1",
+                    "name": "Highway Construction Qualification",
+                    "domain": "Road",
+                    "classe": "A",
+                    "description": "Qualification for large-scale road projects"
+                }
+            ],
+            "meetings": [
+                {
+                    "when": "2025-10-01T10:00:00Z",
+                    "description": "Pre-bid meeting for Section A"
+                },
+                {
+                    "when": "2025-10-05T14:00:00Z",
+                    "description": "Site visit for Section A"
+                }
+            ]
+        },
+        {
+            "number": 2,
+            "title": "Bridge Over River X",
+            "description": "Construction of a 500m bridge",
+            "estimate": 8000000.00,
+            "bond": 300000.00,
+            "plans_price": 1500.00,
+            "reserved": true,
+            "variant": false,
+            "category": {
+                "label": "Bridges",
+                "rank": 3,
+                "description": "Bridge construction projects"
+            },
+            "agrements": [
+                {
+                    "short": "CERT2",
+                    "name": "Bridge Safety Certification",
+                    "description": "Certification for bridge structural integrity"
+                }
+            ],
+            "qualifs": [
+                {
+                    "short": "QUAL2",
+                    "name": "Bridge Construction Qualification",
+                    "domain": "Bridge",
+                    "classe": "B",
+                    "description": "Qualification for bridge projects"
+                }
+            ],
+            "meetings": [
+                {
+                    "when": "2025-10-02T09:00:00Z",
+                    "description": "Pre-bid meeting for Bridge"
+                }
+            ]
+        }
+    ]
+}

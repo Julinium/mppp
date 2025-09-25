@@ -33,23 +33,35 @@ class QualifSerializer(serializers.ModelSerializer):
         model = Qualif
         fields = ['id', 'short', 'name', 'domain', 'classe', 'description']
 
+class SampleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Sample
+        fields = ['id', 'when', 'description', 'lot']
+
 class MeetingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Meeting
+        fields = ['id', 'when', 'description', 'lot']
+
+class VisitSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Visit
         fields = ['id', 'when', 'description', 'lot']
 
 class LotSerializer(serializers.ModelSerializer):
     category = CategorySerializer(read_only=True)
     agrements = AgrementSerializer(many=True, read_only=True)
     qualifs = QualifSerializer(many=True, read_only=True)
+    samples = SampleSerializer(many=True, read_only=True)
     meetings = MeetingSerializer(many=True, read_only=True)
+    visits = VisitSerializer(many=True, read_only=True)
     
     class Meta:
         model = Lot
         fields = [
             'id', 'number', 'title', 'description', 'estimate', 'bond', 
             'plans_price', 'reserved', 'variant', 'category', 'tender',
-            'agrements', 'qualifs', 'meetings'
+            'agrements', 'qualifs', 'samples', 'meetings', 'visits'
         ]
 
 class TenderSerializer(serializers.ModelSerializer):

@@ -210,7 +210,7 @@ def getConsObject(link_item):
     else:
         cons_lots = [
             {
-                C.LOTNMB: 1,
+                lots_count: 1,
                 C.OBJETL: cons_objet,
                 C.CATEGL: cons_categ,
                 C.DESCRI: '',
@@ -299,6 +299,7 @@ def getLotsObject(lots_href):
 
     def iscomment(elem):
         return isinstance(elem, Comment)
+
     separator = soup.find('div', class_='separator')
     comments = soup.find_all(string=iscomment)
     i = 0
@@ -316,8 +317,12 @@ def getLotsObject(lots_href):
             title = title_elem.get_text().strip() if title_elem else ""
 
             # Category
+            category = []
             category_elem = title_elem.find_next_sibling("div", class_="content-bloc bloc-600")
-            category = category_elem.get_text().strip() if category_elem else ""
+            categ = category_elem.get_text().strip() if category_elem else ""
+            if categ != "":
+                category.append({"label": category,})
+            
 
             # Extract Description
             description_elem = category_elem.find_next_sibling("div", class_="content-bloc bloc-600")
@@ -347,7 +352,7 @@ def getLotsObject(lots_href):
             qualifs = []
             for qualifs_li in qualifs_lis :
                 qualif = qualifs_li.get_text().strip() if qualifs_li else ""
-                if qualif != '' : qualifs.append(qualif)
+                if qualif != '' : qualifs.append({"name": qualif,})
 
             # Agrements
             div_id  = f'ctl0_CONTENU_PAGE_repeaterLots_ctl{i}_panelAgrements'
@@ -358,7 +363,7 @@ def getLotsObject(lots_href):
             agrements = []
             for agrements_li in agrements_lis :
                 agrement = agrements_li.get_text().strip() if agrements_li else ""
-                if agrement != '' : agrements.append(agrement)
+                if agrement != '' : agrements.append({"name": agrement,})
 
             # Samples
             div_id  = f'ctl0_CONTENU_PAGE_repeaterLots_ctl{i}_panelEchantillons'
@@ -374,7 +379,7 @@ def getLotsObject(lots_href):
                     sample_lieu = sample_spans[1].get_text().strip() if sample_spans[1] else ""
                     sample = {
                         C.RVDATE: re.sub(r'\s+', ' ', sample_date).strip(),
-                        C.RVLIEU: re.sub(r'\s+', ' ', sample_lieu).strip(),
+                        C.DESCRI: re.sub(r'\s+', ' ', sample_lieu).strip(),
                         }
                 samples.append(sample)
 
@@ -388,7 +393,7 @@ def getLotsObject(lots_href):
             meeting_d = meeting_span_d.get_text().strip() if meeting_span_d else ""
             meeting_a = meeting_span_a.get_text().strip() if meeting_span_a else ""
             meeting = []
-            if len(meeting_d) > 3 or len(meeting_a) > 3 : meeting.append({C.RVDATE: meeting_d, C.RVLIEU: meeting_a})
+            if len(meeting_d) > 3 or len(meeting_a) > 3 : meeting.append({C.RVDATE: meeting_d, C.DESCRI: meeting_a})
 
             # In-site Visits
             div_id  = f'ctl0_CONTENU_PAGE_repeaterLots_ctl{i}_panelVisitesLieux'
@@ -405,7 +410,7 @@ def getLotsObject(lots_href):
                     visit_lieu = visit_spans[1].get_text().strip() if visit_spans[1] else ""
                     visit = {
                         C.RVDATE: re.sub(r'\s+', ' ', visit_date).strip(),
-                        C.RVLIEU: re.sub(r'\s+', ' ', visit_lieu).strip(),
+                        C.DESCRI: re.sub(r'\s+', ' ', visit_lieu).strip(),
                         }
                 visits.append(visit)
 
@@ -429,21 +434,59 @@ def getLotsObject(lots_href):
             # Store extracted data for current lot
 
             current_lot = {
-                C.LOTNMB: number,
-                C.OBJETL: title,
-                C.CATEGL: category,
-                C.DESCRI: description,
-                C.ESTIMA: estimation,
-                C.CAUTIO: caution,
-                C.QUALIF: qualifs,
-                C.AGREME: agrements,
-                C.ECHANT: samples,
-                C.REUNIO: meeting,
-                C.VISITS: visits,
-                C.VARIAN: variante,
-                C.RESPME: pme,
+                "number": number,
+                "title": title,
+                "category": category,
+                "description": description,
+                "estimate": estimation,
+                "bond": caution,
+                "qualifs": qualifs,
+                "agrements": agrements,
+                "samples": samples,
+                "meetings": meeting,
+                "visits": visits,
+                "variant": variante,
+                "reserved": pme,
                 }
 
             lots.append(current_lot)
             i += 1
     return lots
+
+                # {
+                #     "number": 2,
+                #     "title": "Bridge Over River X",
+                #     "description": "Construction of a 500m bridge",
+                #     "estimate": 8000000.00,
+                #     "bond": 300000.00,
+                #     "plans_price": 1500.00,
+                #     "reserved": true,
+                #     "variant": false,
+                #     "category": {
+                #         "label": "Bridges",
+                #         "rank": 3,
+                #         "description": "Bridge construction projects"
+                #     },
+                #     "agrements": [
+                #         {
+                #             "short": "CERT2",
+                #             "name": "Bridge Safety Certification",
+                #             "description": "Certification for bridge structural integrity"
+                #         }
+                #     ],
+                #     "qualifs": [
+                #         {
+                #             "short": "QUAL2",
+                #             "name": "Bridge Construction Qualification",
+                #             "domain": "Bridge",
+                #             "classe": "B",
+                #             "description": "Qualification for bridge projects"
+                #         }
+                #     ],
+                #     "meetings": [
+                #         {
+                #             "when": "2025-10-02T09:00:00Z",
+                #             "description": "Pre-bid meeting for Bridge"
+                #         }
+                #     ]
+                # }
