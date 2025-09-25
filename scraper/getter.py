@@ -4,7 +4,8 @@ from bs4 import BeautifulSoup, Comment
 import helper
 import constants as C
 
-
+# NA_PLH = C.NA_PLH
+NA_PLH = None
 
 def getJson(link_item):
 
@@ -78,10 +79,10 @@ def getJson(link_item):
     cons_pub_d = link_item[2].strip()
 
     deadl_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_dateHeureLimiteRemisePlis')
-    cons_deadl = deadl_span.get_text().strip() if deadl_span else ""
+    cons_deadl = deadl_span.get_text().strip() if deadl_span else NA_PLH
 
     picto_img  = soup.find('img', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_pictCertificat')
-    picto_src  = picto_img['src'].strip() if picto_img else ""
+    picto_src  = picto_img['src'].strip() if picto_img else NA_PLH
     cons_repec = picto_src.strip().replace('themes/images/', '').replace('.gif', '')
 
     cance_span = soup.find('img', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_pictConsultationAnnulee')
@@ -89,140 +90,154 @@ def getJson(link_item):
 
     category = None
     categ_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_categoriePrincipale')
-    cons_categ = categ_span.get_text().strip() if categ_span else ""
+    cons_categ = categ_span.get_text().strip() if categ_span else NA_PLH
     if cons_categ != "":
         category = {"label": cons_categ}
 
     refce_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_reference')
-    cons_refce = refce_span.get_text().strip() if refce_span else ""
+    cons_refce = refce_span.get_text().strip() if refce_span else NA_PLH
 
     objet_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_objet')
-    cons_objet = objet_span.get_text().strip() if objet_span else ""
+    cons_objet = objet_span.get_text().strip() if objet_span else NA_PLH
 
     helper.printMessage('DEBUG', 'getter.getJson', f'Found item: = {cons_objet[:C.TRUNCA]} ...')
 
     client = None
     achet_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_entiteAchat')
-    cons_achet = achet_span.get_text().strip() if achet_span else ""
-    if cons_achet != "":
+    cons_achet = achet_span.get_text().strip() if achet_span else NA_PLH
+    if cons_achet != NA_PLH:
         client = {"name": cons_achet}
 
     type = None
     type_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_annonce')
-    cons_type = type_span.get_text().strip() if type_span else ""
-    if cons_type != "":
+    cons_type = type_span.get_text().strip() if type_span else NA_PLH
+    if cons_type != NA_PLH:
         type = {"name": cons_type}
     
     procedure = None
     proce_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_typeProcedure')
-    cons_proce = proce_span.get_text().strip() if proce_span else ""
-    if cons_proce != "":
+    cons_proce = proce_span.get_text().strip() if proce_span else NA_PLH
+    if cons_proce != NA_PLH:
         procedure = {"name": cons_proce}
 
     mode = None
     passa_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_modePassation')
-    cons_passa = passa_span.get_text().replace('|', '').strip() if passa_span else ""
-    if cons_passa != "":
+    cons_passa = passa_span.get_text().replace('|', '').strip() if passa_span else NA_PLH
+    if cons_passa != NA_PLH:
         mode = {"name": cons_passa}
 
     lexec_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_lieuxExecutions')
-    cons_lexec = lexec_span.get_text().strip() if lexec_span else ""
+    cons_lexec = lexec_span.get_text().strip() if lexec_span else NA_PLH
 
     domai_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_domainesActivite')
     domains = []
     domai_lis  = domai_span.find_all('li')
     for domai_li in domai_lis:
-        domai = domai_li.get_text().strip() if domai_li else ""
-        if len(domai) > 1 : domains.append({"name": domai})
+        domain = domai_li.get_text().strip() if domai_li else NA_PLH
+        if domain != NA_PLH : domains.append({"name": domain})
 
     add_r_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_adresseRetraitDossiers')
-    cons_add_r = add_r_span.get_text().strip() if add_r_span else ""
+    cons_add_r = add_r_span.get_text().strip() if add_r_span else NA_PLH
 
     add_d_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_adresseDepotOffres')
-    cons_add_d = add_d_span.get_text().strip() if add_d_span else ""
+    cons_add_d = add_d_span.get_text().strip() if add_d_span else NA_PLH
 
     add_o_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_lieuOuverturePlis')
-    cons_add_o = add_o_span.get_text().strip() if add_o_span else ""
+    cons_add_o = add_o_span.get_text().strip() if add_o_span else NA_PLH
 
     plans_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_prixAcquisitionPlan')
-    cons_plans = plans_span.get_text().strip() if plans_span else ""
+    cons_plans = plans_span.get_text().strip() if plans_span else NA_PLH
 
     adm_n_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_contactAdministratif')
-    cons_adm_n = adm_n_span.get_text().strip() if adm_n_span else ""
+    cons_adm_n = adm_n_span.get_text().strip() if adm_n_span else NA_PLH
 
     adm_m_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_email')
-    cons_adm_m = adm_m_span.get_text().strip() if adm_m_span else ""
+    cons_adm_m = adm_m_span.get_text().strip() if adm_m_span else NA_PLH
 
     adm_t_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_telephone')
-    cons_adm_t = adm_t_span.get_text().strip() if adm_t_span else ""
+    cons_adm_t = adm_t_span.get_text().strip() if adm_t_span else NA_PLH
 
     adm_f_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_telecopieur')
-    cons_adm_f = adm_f_span.get_text().strip() if adm_f_span else ""
+    cons_adm_f = adm_f_span.get_text().strip() if adm_f_span else NA_PLH
 
     reser_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_idRefRadio_RepeaterReferentielRadio_ctl0_labelReferentielRadio')
-    cons_reser = reser_span.get_text().strip() if reser_span else ""
+    cons_reser = reser_span.get_text().strip() if reser_span else NA_PLH
 
     qualifs = []
     quali_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_qualification')
-    # cons_quali = []
     quali_lis  = quali_span.find_all('li')
     for quali_li in quali_lis:
-        qualif = quali_li.get_text().strip() if quali_li else ""
-        if len(qualif) > 1 : qualifs.append({"name": qualif,})
+        qualif = quali_li.get_text().strip() if quali_li else NA_PLH
+        if qualif != NA_PLH : 
+            qualification = {
+                "short": "",
+                "name": qualif,
+                "domain": "",
+                "classe": "",
+                "description": None
+                }
+            qualifs.append(qualification)
 
     agrements = []
     agrem_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_agrements')
     # cons_agrem = []
     agrem_lis  = agrem_span.find_all('li')
     for agrem_li in agrem_lis:
-        agrement = agrem_li.get_text().strip() if agrem_li else ""
-        if len(agrement) > 1 : agrements.append({"name": agrement,})
+        agrement = agrem_li.get_text().strip() if agrem_li else NA_PLH
+        if agrement != NA_PLH : agrements.append({"name": agrement})
 
     # Samples
     samples = []
     ech_d_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_dateEchantillons')
-    cons_ech_d = ech_d_span.get_text().strip() if ech_d_span else ""
+    cons_ech_d = ech_d_span.get_text().strip() if ech_d_span else NA_PLH
     ech_a_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_adresseEchantillons')
-    cons_ech_a = ech_a_span.get_text().strip() if ech_a_span else ""
-    if len(cons_ech_d) > 3 or len(cons_ech_a) > 3 : samples.append({"when": cons_ech_d, "description": cons_ech_a})
+    cons_ech_a = ech_a_span.get_text().strip() if ech_a_span else NA_PLH
+    if cons_ech_d != NA_PLH or cons_ech_a != NA_PLH:
+        samples.append({"when": cons_ech_d, "description": cons_ech_a})
 
     # Meetings
     meetings = []
     reu_d_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_dateReunion')
-    cons_reu_d = reu_d_span.get_text().strip() if reu_d_span else ""
+    cons_reu_d = reu_d_span.get_text().strip() if reu_d_span else NA_PLH
     reu_a_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_adresseReunion')
-    cons_reu_a = reu_a_span.get_text().strip() if reu_a_span else ""
-    if len(cons_reu_d) > 3 or len(cons_reu_a) > 3 : meetings.append({"when": cons_reu_d, "description": cons_reu_a})
+    cons_reu_a = reu_a_span.get_text().strip() if reu_a_span else NA_PLH
+    if cons_reu_d != NA_PLH or cons_reu_a != NA_PLH:
+        meetings.append({"when": cons_reu_d, "description": cons_reu_a})
 
     # Visits #
     visits = []
     vis_d_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_repeaterVisitesLieux_ctl1_dateVisites')
-    cons_vis_d = vis_d_span.get_text().strip() if vis_d_span else ""
+    cons_vis_d = vis_d_span.get_text().strip() if vis_d_span else NA_PLH
     vis_a_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_repeaterVisitesLieux_ctl1_adresseVisites')
-    cons_vis_a = vis_a_span.get_text().strip() if vis_a_span else ""
-    if len(cons_vis_d) > 3 or len(cons_vis_a) > 3 : visits.append({"when": cons_vis_d, "description": cons_vis_a})
+    cons_vis_a = vis_a_span.get_text().strip() if vis_a_span else NA_PLH
+    if cons_vis_d != NA_PLH or cons_vis_a != NA_PLH:
+        visits.append({"when": cons_vis_d, "description": cons_vis_a})
 
     varia_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_varianteValeur')
-    cons_varia = varia_span.get_text().strip() if varia_span else ""
+    cons_varia = varia_span.get_text().strip() if varia_span else NA_PLH
 
     estim_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_idReferentielZoneText_RepeaterReferentielZoneText_ctl0_labelReferentielZoneText')
-    cons_estim = estim_span.get_text().strip() if estim_span else ""
+    cons_estim = estim_span.get_text().strip() if estim_span else NA_PLH
 
     cauti_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_cautionProvisoire')
-    cons_cauti = cauti_span.get_text().strip() if cauti_span else ""
+    cons_cauti = cauti_span.get_text().strip() if cauti_span else NA_PLH
 
     sized_anch = bowl.find('a', id='ctl0_CONTENU_PAGE_linkDownloadDce')
-    cons_sized = sized_anch.get_text().strip() if sized_anch else ""
-    cons_sized = sized_anch.get_text().strip('Dossier de consultation -').strip() if sized_anch else ""
+    cons_sized = sized_anch.get_text().strip() if sized_anch else NA_PLH
+    cons_sized = sized_anch.get_text().strip('Dossier de consultation -').strip() if sized_anch else NA_PLH
 
     nbrlo_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_nbrLots')
     cons_nbrlo = nbrlo_span.get_text().replace('Lots', '').strip() if nbrlo_span else "1"
-    if cons_nbrlo == '': cons_nbrlo = '1'
+    if cons_nbrlo == "": cons_nbrlo = "1"
 
     lots_span = soup.find('a', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_linkDetailLots')
-    lots_href = ''
-    if lots_span and lots_span.has_attr('href'): lots_href = lots_span['href']
+    lots_href = ""
+    if lots_span and lots_span.has_attr('href'): 
+        lots_href = lots_span['href']
 
+    #######################
+    
+    #######################
 
     if len(lots_href) > 2:
         cons_lots = getLots(lots_href)
@@ -232,10 +247,10 @@ def getJson(link_item):
                 "number": 1,
                 "title": cons_objet,
                 "category": category,
-                "description": '',
-                "estimate": cons_estim,
-                "bond": cons_cauti,
-                "reserved": cons_reser,
+                # "description": '',
+                "estimate": helper.getAmount(cons_estim),
+                "bond": helper.getAmount(cons_cauti),
+                "reserved": cons_reser == "Oui",
                 "qualifs": qualifs,
                 "agrements": agrements,
                 "samples": samples,
