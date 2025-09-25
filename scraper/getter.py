@@ -6,7 +6,8 @@ import constants as C
 
 
 
-def getConsObject(link_item):
+def getJson(link_item):
+
     """
     # Synapsis:
         From a link, gets a structured object (JSON) representing data of the Consultation and all its related objects
@@ -17,11 +18,12 @@ def getConsObject(link_item):
     """
 
     if link_item == None or len(link_item) < 3:
-        helper.printMessage('ERROR', 'getter.getConsObject', 'Got an invalid link item.')
+        helper.printMessage('ERROR', 'getter.getJson', 'Got an invalid link item.')
         return None
-    helper.printMessage('DEBUG', 'getter.getConsObject', f'Getting objects for item id = {link_item[0]}')
+    helper.printMessage('DEBUG', 'getter.getJson', f'Getting objects for item id = {link_item[0]}')
 
-    cons_link = f'{C.LINK_PREFIX}{link_item[0]}{C.LINK_STITCH}{link_item[1]}'
+    cons_uri = f"{link_item[0]}{C.LINK_STITCH}{link_item[1]}"
+    cons_link = f'{C.LINK_PREFIX}{cons_uri}'
     dce_link = f'{C.SITE_INDEX}?page=entreprise.EntrepriseDownloadCompleteDce&reference={link_item[0]}&orgAcronym={link_item[1]}'
 
     rua = helper.getUa()
@@ -33,9 +35,9 @@ def getConsObject(link_item):
         end_index = rua.index(end_delimiter, start_index)
         rua_label = rua[start_index:end_index]
     except ValueError as ve:
-        helper.printMessage('ERROR', 'getter.getConsObject', f'Error trimming UA: {str(ve)}')
+        helper.printMessage('ERROR', 'getter.getJson', f'Error trimming UA: {str(ve)}')
     
-    helper.printMessage('DEBUG', 'getter.getConsObject', f'Using UA: {rua_label}.')
+    helper.printMessage('DEBUG', 'getter.getJson', f'Using UA: {rua_label}.')
     headino = {"User-Agent": rua }
     sessiono = requests.Session()
 
@@ -47,23 +49,23 @@ def getConsObject(link_item):
                 cons_bytes = int(dce_head.headers['Content-Length'])
             # return None
         else:
-            helper.printMessage('WARN', 'getter.getConsObject', f'Request to DCE Header page returned a {dce_head.status_code} status code.')
+            helper.printMessage('WARN', 'getter.getJson', f'Request to DCE Header page returned a {dce_head.status_code} status code.')
             if dce_head.status_code == 429:
-                helper.printMessage('WARN', 'getter.getConsObject', f'Too many Requests, said the server: {dce_head.status_code} !')
+                helper.printMessage('WARN', 'getter.getJson', f'Too many Requests, said the server: {dce_head.status_code} !')
                 helper.sleepRandom(300, 600)
     except Exception as x:
-        helper.printMessage('WARN', 'getter.getConsObject', f'Exception raised while getting file size at {str(dce_link)}: {str(x)}')
+        helper.printMessage('WARN', 'getter.getJson', f'Exception raised while getting file size at {str(dce_link)}: {str(x)}')
         # return None
 
     try: request_cons = sessiono.get(cons_link, headers=headino, timeout=C.REQ_TIMEOUT)  # driver.get(lots_link)
     except Exception as x:
-        helper.printMessage('ERROR', 'getter.getConsObject', f'Exception raised while getting Cons at {str(cons_link)}: {str(x)}')
+        helper.printMessage('ERROR', 'getter.getJson', f'Exception raised while getting Cons at {str(cons_link)}: {str(x)}')
         return None
-    helper.printMessage('DEBUG', 'getter.getConsObject', f'Getting Cons page : {request_cons}')
+    helper.printMessage('DEBUG', 'getter.getJson', f'Getting Cons page : {request_cons}')
     if request_cons.status_code != 200 :
-        helper.printMessage('ERROR', 'getter.getConsObject', f'Request to Cons page returned a {request_cons.status_code} status code.')
+        helper.printMessage('ERROR', 'getter.getJson', f'Request to Cons page returned a {request_cons.status_code} status code.')
         if request_cons.status_code == 429:
-            helper.printMessage('ERROR', 'getter.getConsObject', f'Too many Requests, said the server: {request_cons.status_code} !')
+            helper.printMessage('ERROR', 'getter.getJson', f'Too many Requests, said the server: {request_cons.status_code} !')
             helper.sleepRandom(300, 600)
         return None
 
@@ -85,8 +87,11 @@ def getConsObject(link_item):
     cance_span = soup.find('img', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_pictConsultationAnnulee')
     cons_cance = True if cance_span else False
 
+    category = None
     categ_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_categoriePrincipale')
     cons_categ = categ_span.get_text().strip() if categ_span else ""
+    if cons_categ != "":
+        category = {"label": cons_categ}
 
     refce_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_reference')
     cons_refce = refce_span.get_text().strip() if refce_span else ""
@@ -94,29 +99,41 @@ def getConsObject(link_item):
     objet_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_objet')
     cons_objet = objet_span.get_text().strip() if objet_span else ""
 
-    helper.printMessage('DEBUG', 'getter.getConsObject', f'Found item: = {cons_objet[:C.TRUNCA]} ...')
+    helper.printMessage('DEBUG', 'getter.getJson', f'Found item: = {cons_objet[:C.TRUNCA]} ...')
 
+    client = None
     achet_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_entiteAchat')
     cons_achet = achet_span.get_text().strip() if achet_span else ""
+    if cons_achet != "":
+        client = {"name": cons_achet}
 
+    type = None
     type_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_annonce')
     cons_type = type_span.get_text().strip() if type_span else ""
-
+    if cons_type != "":
+        type = {"name": cons_type}
+    
+    procedure = None
     proce_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_typeProcedure')
     cons_proce = proce_span.get_text().strip() if proce_span else ""
+    if cons_proce != "":
+        procedure = {"name": cons_proce}
 
+    mode = None
     passa_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_modePassation')
     cons_passa = passa_span.get_text().replace('|', '').strip() if passa_span else ""
+    if cons_passa != "":
+        mode = {"name": cons_passa}
 
     lexec_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_lieuxExecutions')
     cons_lexec = lexec_span.get_text().strip() if lexec_span else ""
 
     domai_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_domainesActivite')
-    cons_domai = []
+    domains = []
     domai_lis  = domai_span.find_all('li')
     for domai_li in domai_lis:
         domai = domai_li.get_text().strip() if domai_li else ""
-        if len(domai) > 1 : cons_domai.append(domai)
+        if len(domai) > 1 : domains.append({"name": domai})
 
     add_r_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_adresseRetraitDossiers')
     cons_add_r = add_r_span.get_text().strip() if add_r_span else ""
@@ -145,43 +162,45 @@ def getConsObject(link_item):
     reser_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_idRefRadio_RepeaterReferentielRadio_ctl0_labelReferentielRadio')
     cons_reser = reser_span.get_text().strip() if reser_span else ""
 
+    qualifs = []
     quali_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_qualification')
-    cons_quali = []
+    # cons_quali = []
     quali_lis  = quali_span.find_all('li')
     for quali_li in quali_lis:
-        quali = quali_li.get_text().strip() if quali_li else ""
-        if len(quali) > 1 : cons_quali.append(quali)
+        qualif = quali_li.get_text().strip() if quali_li else ""
+        if len(qualif) > 1 : qualifs.append({"name": qualif,})
 
+    agrements = []
     agrem_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_agrements')
-    cons_agrem = []
+    # cons_agrem = []
     agrem_lis  = agrem_span.find_all('li')
     for agrem_li in agrem_lis:
-        agrem = agrem_li.get_text().strip() if agrem_li else ""
-        if len(agrem) > 1 : cons_agrem.append(agrem)
+        agrement = agrem_li.get_text().strip() if agrem_li else ""
+        if len(agrement) > 1 : agrements.append({"name": agrement,})
 
     # Samples
-    cons_echan = []
+    samples = []
     ech_d_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_dateEchantillons')
     cons_ech_d = ech_d_span.get_text().strip() if ech_d_span else ""
     ech_a_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_adresseEchantillons')
     cons_ech_a = ech_a_span.get_text().strip() if ech_a_span else ""
-    if len(cons_ech_d) > 3 or len(cons_ech_a) > 3 : cons_echan.append({C.RVDATE: cons_ech_d, C.RVLIEU: cons_ech_a})
+    if len(cons_ech_d) > 3 or len(cons_ech_a) > 3 : samples.append({"when": cons_ech_d, "description": cons_ech_a})
 
     # Meetings
-    cons_reuni = []
+    meetings = []
     reu_d_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_dateReunion')
     cons_reu_d = reu_d_span.get_text().strip() if reu_d_span else ""
     reu_a_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_adresseReunion')
     cons_reu_a = reu_a_span.get_text().strip() if reu_a_span else ""
-    if len(cons_reu_d) > 3 or len(cons_reu_a) > 3 : cons_reuni.append({C.RVDATE: cons_reu_d, C.RVLIEU: cons_reu_a})
+    if len(cons_reu_d) > 3 or len(cons_reu_a) > 3 : meetings.append({"when": cons_reu_d, "description": cons_reu_a})
 
     # Visits #
-    cons_visit = []
+    visits = []
     vis_d_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_repeaterVisitesLieux_ctl1_dateVisites')
     cons_vis_d = vis_d_span.get_text().strip() if vis_d_span else ""
     vis_a_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_repeaterVisitesLieux_ctl1_adresseVisites')
     cons_vis_a = vis_a_span.get_text().strip() if vis_a_span else ""
-    if len(cons_vis_d) > 3 or len(cons_vis_a) > 3 : cons_visit.append({C.RVDATE: cons_vis_d, C.RVLIEU: cons_vis_a})
+    if len(cons_vis_d) > 3 or len(cons_vis_a) > 3 : visits.append({"when": cons_vis_d, "description": cons_vis_a})
 
     varia_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_varianteValeur')
     cons_varia = varia_span.get_text().strip() if varia_span else ""
@@ -204,63 +223,62 @@ def getConsObject(link_item):
     lots_href = ''
     if lots_span and lots_span.has_attr('href'): lots_href = lots_span['href']
 
-    # cons_lots = []
+
     if len(lots_href) > 2:
-        cons_lots = getLotsObject(lots_href)
+        cons_lots = getLots(lots_href)
     else:
         cons_lots = [
             {
-                lots_count: 1,
-                C.OBJETL: cons_objet,
-                C.CATEGL: cons_categ,
-                C.DESCRI: '',
-                C.ESTIMA: cons_estim,
-                C.CAUTIO: cons_cauti,
-                C.RESPME: cons_reser,
-                C.QUALIF: cons_quali,
-                C.AGREME: cons_agrem,
-                C.ECHANT: cons_echan,
-                C.REUNIO: cons_reuni,
-                C.VISITS: cons_visit,
-                C.VARIAN: cons_varia,
+                "number": 1,
+                "title": cons_objet,
+                "category": category,
+                "description": '',
+                "estimate": cons_estim,
+                "bond": cons_cauti,
+                "reserved": cons_reser,
+                "qualifs": qualifs,
+                "agrements": agrements,
+                "samples": samples,
+                "meetings": meetings,
+                "visits": visits,
+                "variant": cons_varia,
                 }
             ]
 
     cons_dict = {
-        C.PUDATE: cons_pub_d,
-        C.DDLINE: cons_deadl,
-        C.CANCEL: cons_cance,
-        C.REFERE: cons_refce,
-        C.CATEGC: cons_categ,
-        C.NUMBLO: cons_nbrlo,
-        C.OBJETC: cons_objet,
-        C.LIEUEX: cons_lexec,
-        C.ACHETE: cons_achet,
-        C.TYPEAN: cons_type,
-        C.PROCED: cons_proce,
-        C.MODEPA: cons_passa,
-        C.REPONS: cons_repec,
-        C.LOTSSS: cons_lots,
-        C.PRIXPL: cons_plans,
-        C.DOMAIN: cons_domai,
-        C.RETDOS: cons_add_r,
-        C.DEPOFF: cons_add_d,
-        C.LIEOUV: cons_add_o,
-        C.CONTNM: cons_adm_n,
-        C.CONTML: cons_adm_m,
-        C.CONTTL: cons_adm_t,
-        C.CONTFX: cons_adm_f,
-        C.IDENTI: cons_idddd,
-        C.LINKKK: cons_link,
-        C.DCESIZ: cons_sized,
-        C.BYTESS: cons_bytes,
+        "published": cons_pub_d,
+        "deadline": cons_deadl,
+        "cancelled": cons_cance,
+        "reference": cons_refce,
+        "category": category,
+        "lots_count": cons_nbrlo,
+        "title": cons_objet,
+        "location": cons_lexec,
+        "client": cons_achet,
+        "type": type,
+        "procedure": procedure,
+        "mode": mode,
+        "ebid_esign": cons_repec,
+        "lots": cons_lots,
+        "plans_price": cons_plans,
+        "domains": domains,
+        "address_withdrawal": cons_add_r,
+        "address_bidding": cons_add_d,
+        "address_opening": cons_add_o,
+        "contact_name": cons_adm_n,
+        "contact_email": cons_adm_m,
+        "contact_phone": cons_adm_t,
+        "contact_fax": cons_adm_f,
+        "chrono": cons_idddd,
+        "link": cons_uri,
+        "size_read": cons_sized,
         }
 
     return cons_dict
 
 
-def getLotsObject(lots_href):
-    helper.printMessage('DEBUG', 'getter.getJson', 'Item is multi-lot. Reading lots ... ')
+def getLots(lots_href):
+    helper.printMessage('DEBUG', 'getter.getLots', 'Item is multi-lot. Reading lots ... ')
     lots_link = C.SITE_INDEX + lots_href.replace("javascript:popUp('index.php", "").replace("%27,%27yes%27)", "")
 
     rua = helper.getUa()
@@ -272,22 +290,22 @@ def getLotsObject(lots_href):
         end_index = rua.index(end_delimiter, start_index)
         rua_label = rua[start_index:end_index]
     except ValueError as ve:
-        helper.printMessage('WARN', 'getter.getConsObject', f'Error trimming UA: {str(ve)}')
+        helper.printMessage('WARN', 'getter.getLots', f'Error trimming UA: {str(ve)}')
     
-    helper.printMessage('DEBUG', 'getter.getObject', f'Using UA: {rua_label}.')
+    helper.printMessage('DEBUG', 'getter.getLots', f'Using UA: {rua_label}.')
     headino = {"User-Agent": rua }
 
     sessiono = requests.Session()
 
     try: request_lots = sessiono.get(lots_link, headers=headino, timeout=C.REQ_TIMEOUT)  # driver.get(lots_link)
     except Exception as x:
-        helper.printMessage('ERROR', 'getter.getObject', f'Exception raised while getting lots at {str(lots_link)}: {str(x)}')
+        helper.printMessage('ERROR', 'getter.getLots', f'Exception raised while getting lots at {str(lots_link)}: {str(x)}')
         return None
-    helper.printMessage('DEBUG', 'getter.getObject', f'Getting Lots page : {request_lots}')
+    helper.printMessage('DEBUG', 'getter.getLots', f'Getting Lots page : {request_lots}')
     if request_lots.status_code != 200 :
-        helper.printMessage('ERROR', 'getter.getObject', f'Request to Lots page returned a {request_lots.status_code} status code.')
+        helper.printMessage('ERROR', 'getter.getLots', f'Request to Lots page returned a {request_lots.status_code} status code.')
         if request_lots.status_code == 429:
-            helper.printMessage('ERROR', 'getter.getObject', f'Too many Requests, said the server: {request_lots.status_code} !')
+            helper.printMessage('ERROR', 'getter.getLots', f'Too many Requests, said the server: {request_lots.status_code} !')
             helper.sleepRandom(300, 600)
         return None
 
@@ -317,11 +335,11 @@ def getLotsObject(lots_href):
             title = title_elem.get_text().strip() if title_elem else ""
 
             # Category
-            category = []
+            category = None
             category_elem = title_elem.find_next_sibling("div", class_="content-bloc bloc-600")
             categ = category_elem.get_text().strip() if category_elem else ""
             if categ != "":
-                category.append({"label": category,})
+                category = {"label": categ}
             
 
             # Extract Description
@@ -378,8 +396,8 @@ def getLotsObject(lots_href):
                     sample_date = sample_spans[0].get_text().strip() if sample_spans[0] else ""
                     sample_lieu = sample_spans[1].get_text().strip() if sample_spans[1] else ""
                     sample = {
-                        C.RVDATE: re.sub(r'\s+', ' ', sample_date).strip(),
-                        C.DESCRI: re.sub(r'\s+', ' ', sample_lieu).strip(),
+                        "when": re.sub(r'\s+', ' ', sample_date).strip(),
+                        "description": re.sub(r'\s+', ' ', sample_lieu).strip(),
                         }
                 samples.append(sample)
 
@@ -392,8 +410,8 @@ def getLotsObject(lots_href):
             meeting_span_a = meeting_div.find('span', id=span_id)
             meeting_d = meeting_span_d.get_text().strip() if meeting_span_d else ""
             meeting_a = meeting_span_a.get_text().strip() if meeting_span_a else ""
-            meeting = []
-            if len(meeting_d) > 3 or len(meeting_a) > 3 : meeting.append({C.RVDATE: meeting_d, C.DESCRI: meeting_a})
+            meetings = []
+            if len(meeting_d) > 3 or len(meeting_a) > 3 : meetings.append({"when": meeting_d, "description": meeting_a})
 
             # In-site Visits
             div_id  = f'ctl0_CONTENU_PAGE_repeaterLots_ctl{i}_panelVisitesLieux'
@@ -409,8 +427,8 @@ def getLotsObject(lots_href):
                     visit_date = visit_spans[0].get_text().strip() if visit_spans[0] else ""
                     visit_lieu = visit_spans[1].get_text().strip() if visit_spans[1] else ""
                     visit = {
-                        C.RVDATE: re.sub(r'\s+', ' ', visit_date).strip(),
-                        C.DESCRI: re.sub(r'\s+', ' ', visit_lieu).strip(),
+                        "when": re.sub(r'\s+', ' ', visit_date).strip(),
+                        "description": re.sub(r'\s+', ' ', visit_lieu).strip(),
                         }
                 visits.append(visit)
 
@@ -443,7 +461,7 @@ def getLotsObject(lots_href):
                 "qualifs": qualifs,
                 "agrements": agrements,
                 "samples": samples,
-                "meetings": meeting,
+                "meetings": meetings,
                 "visits": visits,
                 "variant": variante,
                 "reserved": pme,
@@ -452,41 +470,3 @@ def getLotsObject(lots_href):
             lots.append(current_lot)
             i += 1
     return lots
-
-                # {
-                #     "number": 2,
-                #     "title": "Bridge Over River X",
-                #     "description": "Construction of a 500m bridge",
-                #     "estimate": 8000000.00,
-                #     "bond": 300000.00,
-                #     "plans_price": 1500.00,
-                #     "reserved": true,
-                #     "variant": false,
-                #     "category": {
-                #         "label": "Bridges",
-                #         "rank": 3,
-                #         "description": "Bridge construction projects"
-                #     },
-                #     "agrements": [
-                #         {
-                #             "short": "CERT2",
-                #             "name": "Bridge Safety Certification",
-                #             "description": "Certification for bridge structural integrity"
-                #         }
-                #     ],
-                #     "qualifs": [
-                #         {
-                #             "short": "QUAL2",
-                #             "name": "Bridge Construction Qualification",
-                #             "domain": "Bridge",
-                #             "classe": "B",
-                #             "description": "Qualification for bridge projects"
-                #         }
-                #     ],
-                #     "meetings": [
-                #         {
-                #             "when": "2025-10-02T09:00:00Z",
-                #             "description": "Pre-bid meeting for Bridge"
-                #         }
-                #     ]
-                # }

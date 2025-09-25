@@ -74,13 +74,13 @@ MEDIA_ROOT = os.getenv("MEDIA_ROOT")
 SELENO_LOGS_DIR = os.getenv("SELENO_LOGS_DIR")
 SELENO_DIR = os.getenv("SELENO_DIR")
 
-# ua_json = Path(__file__).resolve().parent.parent / '.env.ua.json'
-# with open(ua_json) as f:
-#     USER_AGENTS = json.load(f)
+ua_json = Path(__file__).resolve().parent.parent / '.env.ua.json'
+with open(ua_json) as f:
+    USER_AGENTS = json.load(f)
     
-# creds_json = Path(__file__).resolve().parent.parent / '.env.creds.json'
-# with open(creds_json) as g:
-#     DCE_CREDS = json.load(g)
+creds_json = Path(__file__).resolve().parent.parent / '.env.creds.json'
+with open(creds_json) as g:
+    DCE_CREDS = json.load(g)
 
 
 LINES_PER_PAGE = "500"

@@ -60,7 +60,7 @@ class LotSerializer(serializers.ModelSerializer):
         model = Lot
         fields = [
             'id', 'number', 'title', 'description', 'estimate', 'bond', 
-            'plans_price', 'reserved', 'variant', 'category', 'tender',
+            'reserved', 'variant', 'category', 'tender',
             'agrements', 'qualifs', 'samples', 'meetings', 'visits'
         ]
 

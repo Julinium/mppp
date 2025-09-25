@@ -241,12 +241,12 @@ class Tender(models.Model):
     cancelled = models.BooleanField(blank=True, null=True)
     link = models.CharField(max_length=512, blank=True, null=True)
     acronym = models.CharField(max_length=4, blank=True, null=True)
-    mode = models.ForeignKey(Mode, on_delete=models.DO_NOTHING, db_column='mode', blank=True, null=True)
-    procedure = models.ForeignKey(Procedure, on_delete=models.DO_NOTHING, db_column='procedure', blank=True, null=True)
-    client = models.ForeignKey(Client, on_delete=models.DO_NOTHING, db_column='client', blank=True, null=True)
-    type = models.ForeignKey('Type', on_delete=models.DO_NOTHING, db_column='type', blank=True, null=True)
+    mode = models.ForeignKey(Mode, on_delete=models.DO_NOTHING, related_name='tenders', db_column='mode', blank=True, null=True)
+    procedure = models.ForeignKey(Procedure, on_delete=models.DO_NOTHING, related_name='tenders', db_column='procedure', blank=True, null=True)
+    client = models.ForeignKey(Client, on_delete=models.DO_NOTHING, related_name='tenders', db_column='client', blank=True, null=True)
+    type = models.ForeignKey('Type', on_delete=models.DO_NOTHING, related_name='tenders', db_column='type', blank=True, null=True)
     domains = models.ManyToManyField('Domain', through='RelDomainTender', related_name='tenders')
-    
+
     class Meta:
         db_table = 'tender'
     
@@ -285,7 +285,7 @@ class Utilizer(models.Model):
 
 class Visit(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    time = models.DateTimeField(blank=True, null=True)
+    when = models.DateTimeField(blank=True, null=True)
     description = models.CharField(max_length=512, blank=True, null=True)
     lot = models.ForeignKey(Lot, on_delete=models.DO_NOTHING, related_name="visits", db_column='lot', blank=True, null=True)
 
