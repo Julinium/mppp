@@ -30,7 +30,7 @@ def printMessage(level='INFO', raiser='Main', message='!!! Empty Message !!!', b
         print(f'{before * "\n"}[{datetime.now(timezone.utc).strftime(C.LOG_TIME_FORMAT)}][{level}][{raiser}] {message}{after * "\n"}')
 
 
-def money2Float(texte: str) -> Decimal:
+def getAmount(texte: str) -> Decimal:
     """
     Converts a string containing a monetary amount to a Decimal.
 
@@ -74,10 +74,10 @@ def money2Float(texte: str) -> Decimal:
 
         # Convert to Decimal
         return Decimal(f.strip())
-    except (InvalidOperation, ValueError) as x:
-        printMessage('ERROR', 'helper.money2Float', f'Something went wrong while converting string ({texte}) to float. Amount is set to 0')
-        printMessage('ERROR', 'helper.money2Float', str(x))
-        return Decimal('-1')
+    except (InvalidOperation, ValueError):
+        printMessage('ERROR', 'helper.getAmount', f'Could not get Amount from "{texte}". Set to 0')
+        traceback.print_exc()
+        return Decimal('0')
 
 
 def text2Alphanum(text, allCapps=True, dash='-', minLen=8, firstAlpha='M', fillerChar='0'):

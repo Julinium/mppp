@@ -15,7 +15,7 @@ class Agrement(models.Model):
 class Category(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     label = models.CharField(max_length=32, blank=True, null=True)
-    rank = models.SmallIntegerField(blank=True, null=True)
+    # rank = models.SmallIntegerField(blank=True, null=True)
     description = models.CharField(max_length=128, blank=True, null=True)
 
     class Meta:
