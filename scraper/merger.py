@@ -85,6 +85,7 @@ def mergeTender(tender_data):
     # Raises:
     #     serializers.ValidationError: If the JSON data is invalid.
     """
+    data = json2Data(tender_data)
     # Step 1: Validate the JSON using TenderSerializer
     tender_serializer = TenderSerializer(data=tender_data)
     tender_serializer.is_valid(raise_exception=True)

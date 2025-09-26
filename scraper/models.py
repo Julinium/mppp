@@ -11,7 +11,7 @@ class Agrement(models.Model):
     class Meta:
         db_table = 'agrement'
 
-    def save(self, , *args, **kwargs):
+    def save(self, *args, **kwargs):
         try:
             self.short = self.name.split("-")[0].strip()
         except:
@@ -53,7 +53,7 @@ class Client(models.Model):
     class Meta:
         db_table = 'client'
 
-    def save(self, , *args, **kwargs):
+    def save(self, *args, **kwargs):
         try:
             self.ministery = self.name.split("/")[0].strip()
         except:
@@ -98,7 +98,7 @@ class Domain(models.Model):
     class Meta:
         db_table = 'domain'
 
-    def save(self, , *args, **kwargs):
+    def save(self, *args, **kwargs):
         try:
             self.short = self.name.rsplit("-", 1)[-1].strip()
         except:
@@ -196,9 +196,13 @@ class Qualif(models.Model):
     class Meta:
         db_table = 'qualif'
 
-    def save(self, , *args, **kwargs):
+    def save(self, *args, **kwargs):
         try:
-            # self.short = self.name.rsplit("-", 1)[-1].strip()
+            self.classe = self.name.rsplit("/ Classe ", 1)[-1].strip()
+        except:
+            traceback.print_exc()
+        try:
+            self.domain = self.name.split("/", 1)[0].strip()
         except:
             traceback.print_exc()
         
@@ -291,7 +295,7 @@ class Tender(models.Model):
     def __str__():
         return self.title
 
-    def save(self, , *args, **kwargs):
+    def save(self, *args, **kwargs):
         ll = self.lots
         e, b = 0, 0
         r, v = False, False
@@ -319,7 +323,7 @@ class Kind(models.Model):
     class Meta:
         db_table = 'kind'
 
-    # def save(self, , *args, **kwargs):
+    # def save(self, *args, **kwargs):
     #     return super().save(*args, **kwargs)
 
 
