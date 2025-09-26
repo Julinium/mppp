@@ -13,7 +13,7 @@ from .serializers import (
 
 
 
-def formatJson2Data(tender_json):
+def json2Data(tender_json):
     j = tender_json
     try:
         j["published"] = helper.getDateTime(j["published"])
@@ -90,12 +90,14 @@ def mergeTender(tender_data):
     tender_serializer.is_valid(raise_exception=True)
     validated_data = tender_serializer.validated_data
 
-    # Step 2: Handle foreign key relationships (category, client, kind)
+    # Step 2: Handle foreign key relationships (category, client, kind, mode, procedure)
     category_data = validated_data.pop('category', None)
     client_data = validated_data.pop('client', None)
     kind_data = validated_data.pop('kind', None)
+    mode_data = validated_data.pop('mode', None)
+    procedure_data = validated_data.pop('procedure', None)
 
-    # Handle Category
+    ## Handle Category
     category = None
     if category_data:
         label = category_data.get('label')
@@ -107,14 +109,10 @@ def mergeTender(tender_data):
         category_serializer.is_valid(raise_exception=True)
         category = category_serializer.save()
 
-    # Handle Client
+    ## Handle Client
     client = None
     if client_data:
-        short = client_data.get('short')
         name = client_data.get('name')
-        if short and Client.objects.filter(short=short).exists():
-            client = Client.objects.get(short=short)
-            client_serializer = ClientSerializer(client, data=client_data, partial=True)
         elif name and Client.objects.filter(name=name).exists():
             client = Client.objects.get(name=name)
             client_serializer = ClientSerializer(client, data=client_data, partial=True)
@@ -123,14 +121,10 @@ def mergeTender(tender_data):
         client_serializer.is_valid(raise_exception=True)
         client = client_serializer.save()
 
-    # Handle Kind
+    ## Handle Kind
     kind = None
     if kind_data:
-        short = kind_data.get('short')
         name = kind_data.get('name')
-        if short and Kind.objects.filter(short=short).exists():
-            kind = Kind.objects.get(short=short)
-            kind_serializer = KindSerializer(kind, data=kind_data, partial=True)
         elif name and Kind.objects.filter(name=name).exists():
             kind = Kind.objects.get(name=name)
             kind_serializer = KindSerializer(kind, data=kind_data, partial=True)
@@ -139,24 +133,35 @@ def mergeTender(tender_data):
         kind_serializer.is_valid(raise_exception=True)
         kind = kind_serializer.save()
 
-    # Step 3: Create or update Tender
-    reference = validated_data.get('reference')
-    title = validated_data.get('title')
-    chrono = validated_data.get('chrono')
-    tender = None
-    if chrono and Tender.objects.filter(chrono=chrono).exists():
-        tender = Tender.objects.get(chrono=chrono)
-        tender_serializer = TenderSerializer(tender, data=validated_data, partial=True)
-    else:
-        tender_serializer = TenderSerializer(data=validated_data)
-    tender_serializer.is_valid(raise_exception=True)
-    tender = tender_serializer.save(category=category, client=client, kind=kind)
+    ## Handle Mode
+    mode = None
+    if mode_data:
+        name = mode_data.get('name')
+        elif name and Mode.objects.filter(name=name).exists():
+            mode = Mode.objects.get(name=name)
+            mode_serializer = ModeSerializer(mode, data=mode_data, partial=True)
+        else:
+            mode_serializer = ModeSerializer(data=mode_data)
+        mode_serializer.is_valid(raise_exception=True)
+        mode = mode_serializer.save()
 
-    # Step 4: Handle Domains (many-to-many)
+    ## Handle Procedure
+    procedure = None
+    if procedure_data:
+        name = procedure_data.get('name')
+        elif name and Procedure.objects.filter(name=name).exists():
+            procedure = Procedure.objects.get(name=name)
+            procedure_serializer = ProcedureSerializer(procedure, data=procedure_data, partial=True)
+        else:
+            procedure_serializer = ProcedureSerializer(data=procedure_data)
+        procedure_serializer.is_valid(raise_exception=True)
+        procedure = procedure_serializer.save()
+    
+
+    # Step 3: Handle Domains (many-to-many)
     domains_data = validated_data.pop('domains', [])
     json_domain_keys = set()
     for domain_data in domains_data:
-        # short = domain_data.get('short')
         name = domain_data.get('name')
         domain = None
         if name and Domain.objects.filter(name=name).exists():
@@ -176,6 +181,20 @@ def mergeTender(tender_data):
         domain = Domain.objects.filter(name=name).first()
         if domain:
             RelDomainTender.objects.filter(domain=domain, tender=tender).delete()
+
+
+    # Step 4: Create or update Tender
+    chrono = validated_data.get('chrono')
+    tender = None
+    if chrono and Tender.objects.filter(chrono=chrono).exists():
+        tender = Tender.objects.get(chrono=chrono)
+        tender_serializer = TenderSerializer(tender, data=validated_data, partial=True)
+    else:
+        tender_serializer = TenderSerializer(data=validated_data)
+    tender_serializer.is_valid(raise_exception=True)
+    tender = tender_serializer.save(category=category, client=client, kind=kind)
+
+
 
     # Step 5: Handle Lots
     lots_data = validated_data.pop('lots', [])
@@ -204,13 +223,10 @@ def mergeTender(tender_data):
 
         # Match Lot by title or number
         lot_title = lot_data.get('title')
-        lot_number = lot_data.get('number')
+        # lot_number = lot_data.get('number')
         lot = None
         if lot_title and Lot.objects.filter(title=lot_title, tender=tender).exists():
             lot = Lot.objects.get(title=lot_title, tender=tender)
-            lot_serializer = LotSerializer(lot, data=lot_data, partial=True)
-        elif lot_number is not None and Lot.objects.filter(number=lot_number, tender=tender).exists():
-            lot = Lot.objects.get(number=lot_number, tender=tender)
             lot_serializer = LotSerializer(lot, data=lot_data, partial=True)
         else:
             lot_serializer = LotSerializer(data=lot_data)
@@ -243,13 +259,10 @@ def mergeTender(tender_data):
         # Handle Agrements (many-to-many)
         json_agrement_keys = set()
         for agrement_data in agrements_data:
-            short = agrement_data.get('short')
+            # short = agrement_data.get('short')
             name = agrement_data.get('name')
             agrement = None
-            if short and Agrement.objects.filter(short=short).exists():
-                agrement = Agrement.objects.get(short=short)
-                agrement_serializer = AgrementSerializer(agrement, data=agrement_data, partial=True)
-            elif name and Agrement.objects.filter(name=name).exists():
+            if name and Agrement.objects.filter(name=name).exists():
                 agrement = Agrement.objects.get(name=name)
                 agrement_serializer = AgrementSerializer(agrement, data=agrement_data, partial=True)
             else:
@@ -273,10 +286,7 @@ def mergeTender(tender_data):
             short = qualif_data.get('short')
             name = qualif_data.get('name')
             qualif = None
-            if short and Qualif.objects.filter(short=short).exists():
-                qualif = Qualif.objects.get(short=short)
-                qualif_serializer = QualifSerializer(qualif, data=qualif_data, partial=True)
-            elif name and Qualif.objects.filter(name=name).exists():
+            if name and Qualif.objects.filter(name=name).exists():
                 qualif = Qualif.objects.get(name=name)
                 qualif_serializer = QualifSerializer(qualif, data=qualif_data, partial=True)
             else:
@@ -290,7 +300,7 @@ def mergeTender(tender_data):
         existing_qualifs = set(lot.qualifs.values_list('short', 'name'))
         qualifs_to_remove = existing_qualifs - json_qualif_keys
         for short, name in qualifs_to_remove:
-            qualif = Qualif.objects.filter(short=short, name=name).first()
+            qualif = Qualif.objects.filter(name=name).first()
             if qualif:
                 RelQualifLot.objects.filter(qualif=qualif, lot=lot).delete()
 

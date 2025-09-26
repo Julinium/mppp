@@ -135,19 +135,21 @@ class TenderSerializer(serializers.ModelSerializer):
     category = CategorySerializer(read_only=True)
     client = ClientSerializer(read_only=True)
     kind = KindSerializer(read_only=True)
+    mode = ModeSerializer(read_only=True)
+    procedure = ProcedureSerializer(read_only=True)
     domains = DomainSerializer(many=True, read_only=True)
     lots = LotSerializer(many=True, read_only=True)
     
     class Meta:
         model = Tender
         fields = [
-            'id', 'chrono', 'title', 'reference', 'published', 'deadline',
-            'lots_count', 'estimate', 'bond', 'plans_price', 'reserved',
-            'variant', 'category', 'location', 'ebid', 'esign', 'size_read',
+            'id', 'chrono', 'title', 'reference', 'published', 'deadline', 
+            'lots_count', 'estimate', 'bond', 'plans_price', 'reserved', 
+            'variant', 'location', 'ebid', 'esign', 'size_read', 
             'size_bytes', 'address_withdrawal', 'address_bidding', 
-            'address_opening', 'contact_name', 'contact_phone', 'contact_email',
-            'contact_fax', 'created', 'updated', 'cancelled', 'link', 'acronym',
-            'mode', 'procedure', 'client', 'kind', 'domains', 'lots'
+            'address_opening', 'contact_name', 'contact_phone', 'contact_email', 
+            'contact_fax', 'created', 'updated', 'cancelled', 'link', 'acronym', 
+            'category', 'mode', 'procedure', 'client', 'kind', 'domains', 'lots'
         ]
 
 

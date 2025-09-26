@@ -144,7 +144,7 @@ class Lot(models.Model):
     # plans_price = models.DecimalField(max_digits=16, decimal_places=2, blank=True, null=True)
     reserved = models.BooleanField(blank=True, null=True)
     variant = models.BooleanField(blank=True, null=True)
-    category = models.ForeignKey(Category, on_delete=models.DO_NOTHING, related_name="lots", db_column='category', blank=True, null=True)
+    category = models.ForeignKey('Category', on_delete=models.DO_NOTHING, related_name="lots", db_column='category', blank=True, null=True)
     
     tender = models.ForeignKey('Tender', on_delete=models.DO_NOTHING, related_name="lots", db_column='tender', blank=True, null=True)
     agrements = models.ManyToManyField('Agrement', through='RelAgrementLot', related_name='lots')
@@ -159,7 +159,7 @@ class Meeting(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     when = models.DateTimeField(blank=True, null=True)
     description = models.CharField(max_length=512, blank=True, null=True)
-    lot = models.ForeignKey(Lot, on_delete=models.DO_NOTHING, related_name="meetings", db_column='lot', blank=True, null=True)
+    lot = models.ForeignKey('Lot', on_delete=models.DO_NOTHING, related_name="meetings", db_column='lot', blank=True, null=True)
 
     class Meta:
         db_table = 'meeting'
@@ -207,8 +207,8 @@ class Qualif(models.Model):
 
 class RelAgrementLot(models.Model):
     pk = models.CompositePrimaryKey('agrement', 'lot')
-    agrement = models.ForeignKey(Agrement, on_delete=models.DO_NOTHING, db_column='agrement')
-    lot = models.ForeignKey(Lot, on_delete=models.DO_NOTHING, db_column='lot')
+    agrement = models.ForeignKey('Agrement', on_delete=models.DO_NOTHING, db_column='agrement')
+    lot = models.ForeignKey('Lot', on_delete=models.DO_NOTHING, db_column='lot')
 
     class Meta:
         db_table = 'rel_agrement_lot'
@@ -217,7 +217,7 @@ class RelAgrementLot(models.Model):
 
 class RelDomainTender(models.Model):
     pk = models.CompositePrimaryKey('domain', 'tender')
-    domain = models.ForeignKey(Domain, on_delete=models.DO_NOTHING, db_column='domain')
+    domain = models.ForeignKey('Domain', on_delete=models.DO_NOTHING, db_column='domain')
     tender = models.ForeignKey('Tender', on_delete=models.DO_NOTHING, db_column='tender')
 
     class Meta:
@@ -227,8 +227,8 @@ class RelDomainTender(models.Model):
 
 class RelQualifLot(models.Model):
     pk = models.CompositePrimaryKey('qualif', 'lot')
-    qualif = models.ForeignKey(Qualif, on_delete=models.DO_NOTHING, db_column='qualif')
-    lot = models.ForeignKey(Lot, on_delete=models.DO_NOTHING, db_column='lot')
+    qualif = models.ForeignKey('Qualif', on_delete=models.DO_NOTHING, db_column='qualif')
+    lot = models.ForeignKey('Lot', on_delete=models.DO_NOTHING, db_column='lot')
 
     class Meta:
         db_table = 'rel_qualif_lot'
@@ -239,7 +239,7 @@ class Sample(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     when = models.DateTimeField(blank=True, null=True)
     description = models.CharField(max_length=512, blank=True, null=True)
-    lot = models.ForeignKey(Lot, on_delete=models.DO_NOTHING, related_name="samples", db_column='lot', blank=True, null=True)
+    lot = models.ForeignKey('Lot', on_delete=models.DO_NOTHING, related_name="samples", db_column='lot', blank=True, null=True)
 
     class Meta:
         db_table = 'sample'
@@ -259,7 +259,6 @@ class Tender(models.Model):
     plans_price = models.DecimalField(max_digits=16, decimal_places=2, blank=True, null=True, default=0)
     reserved = models.BooleanField(blank=True, null=True)
     variant = models.BooleanField(blank=True, null=True)
-    category = models.ForeignKey(Category, on_delete=models.DO_NOTHING, related_name="tenders", db_column='category', blank=True, null=True)
 
     location = models.CharField(max_length=256, blank=True, null=True)
     ebid = models.SmallIntegerField(blank=True, null=True, default=9, db_comment='1: Required, 0: Not required, Else: NA')
@@ -278,9 +277,11 @@ class Tender(models.Model):
     cancelled = models.BooleanField(blank=True, null=True, default=False)
     link = models.CharField(max_length=512, blank=True, null=True)
     acronym = models.CharField(max_length=4, blank=True, null=True)
-    mode = models.ForeignKey(Mode, on_delete=models.DO_NOTHING, related_name='tenders', db_column='mode', blank=True, null=True)
-    procedure = models.ForeignKey(Procedure, on_delete=models.DO_NOTHING, related_name='tenders', db_column='procedure', blank=True, null=True)
-    client = models.ForeignKey(Client, on_delete=models.DO_NOTHING, related_name='tenders', db_column='client', blank=True, null=True)
+
+    category = models.ForeignKey('Category', on_delete=models.DO_NOTHING, related_name="tenders", db_column='category', blank=True, null=True)
+    mode = models.ForeignKey('Mode', on_delete=models.DO_NOTHING, related_name='tenders', db_column='mode', blank=True, null=True)
+    procedure = models.ForeignKey('Procedure', on_delete=models.DO_NOTHING, related_name='tenders', db_column='procedure', blank=True, null=True)
+    client = models.ForeignKey('Client', on_delete=models.DO_NOTHING, related_name='tenders', db_column='client', blank=True, null=True)
     kind = models.ForeignKey('Kind', on_delete=models.DO_NOTHING, related_name='tenders', db_column='kind', blank=True, null=True)
     domains = models.ManyToManyField('Domain', through='RelDomainTender', related_name='tenders')
 
@@ -335,7 +336,7 @@ class Visit(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     when = models.DateTimeField(blank=True, null=True)
     description = models.CharField(max_length=512, blank=True, null=True)
-    lot = models.ForeignKey(Lot, on_delete=models.DO_NOTHING, related_name="visits", db_column='lot', blank=True, null=True)
+    lot = models.ForeignKey('Lot', on_delete=models.DO_NOTHING, related_name="visits", db_column='lot', blank=True, null=True)
 
     class Meta:
         db_table = 'visit'
