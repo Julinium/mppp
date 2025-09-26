@@ -1,52 +1,118 @@
 import uuid
 from rest_framework import serializers
 
-from .models import Tender, Lot, Agrement, Qualif, Kind, Domain, Category, Client, Meeting, RelAgrementLot, RelDomainTender, RelQualifLot
+from .models import (
+    Tender, Lot, Agrement, Qualif, Kind, Domain, Download, 
+    Category, Change, Client, Contact, Meeting, Favo, Mode, Procedure,
+    RelAgrementLot, RelDomainTender, RelQualifLot
+)
+
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ['id', 'label', 'rank', 'description']
+        fields = ['id', 'label']
+
+
+class ChangeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Change
+        fields = ['id', 'tender', 'reported', 'field', 'old_val', 'new_val', 'description']
+
 
 class ClientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Client
-        fields = ['id', 'short', 'name', 'ministery', 'description']
+        fields = ['id', 'short', 'name', 'ministery']
+
 
 class KindSerializer(serializers.ModelSerializer):
     class Meta:
         model = Kind
-        fields = ['id', 'short', 'name', 'description']
+        fields = ['id', 'short', 'name']
+
+
+class ContactSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Contact
+        fields = [
+            'id', 'when', 'ua', 'ip', 'email', 'phone', 'title',
+            'message', 'method', 'newsletter', 'promos', 'comment',
+            'actions', 'solved', 'file', 'utilizer'
+            ]
+
 
 class DomainSerializer(serializers.ModelSerializer):
     class Meta:
         model = Domain
-        fields = ['id', 'short', 'name', 'description']
+        fields = ['id', 'short', 'name']
+
+
+class DownloadSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Download
+        fields = [
+            'id', 'when', 'ua', 'ip', 'tender', 'bytes_media', 'utilizer'
+            ]
+
+
+class FavoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Favo
+        fields = [
+            'id', 'when', 'ua', 'ip', 'tender', 'comment', 'utilizer'
+            ]
+
+
+ = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+     = models.DateTimeField(blank=True, null=True)
+     = models.CharField(max_length=512, blank=True, null=True)
+     = models.CharField(max_length=256, blank=True, null=True)
+     = models.CharField(max_length=48, blank=True, null=True)
+     = models.ForeignKey('Utilizer', on_delete=models.DO_NOTHING, related_name="favos", db_column='utilizer', blank=True, null=True)
+
 
 class AgrementSerializer(serializers.ModelSerializer):
     class Meta:
         model = Agrement
-        fields = ['id', 'short', 'name', 'description']
+        fields = ['id', 'short', 'name']
+
 
 class QualifSerializer(serializers.ModelSerializer):
     class Meta:
         model = Qualif
-        fields = ['id', 'short', 'name', 'domain', 'classe', 'description']
+        fields = ['id', 'short', 'name', 'domain', 'classe']
+
+
+class ModeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Mode
+        fields = ['id', 'short', 'name']
+
+
+class ProcedureSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Procedure
+        fields = ['id', 'short', 'name']
+
 
 class SampleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sample
         fields = ['id', 'when', 'description', 'lot']
 
+
 class MeetingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Meeting
         fields = ['id', 'when', 'description', 'lot']
 
+
 class VisitSerializer(serializers.ModelSerializer):
     class Meta:
         model = Visit
         fields = ['id', 'when', 'description', 'lot']
+
 
 class LotSerializer(serializers.ModelSerializer):
     category = CategorySerializer(read_only=True)
@@ -63,6 +129,7 @@ class LotSerializer(serializers.ModelSerializer):
             'reserved', 'variant', 'category', 'tender',
             'agrements', 'qualifs', 'samples', 'meetings', 'visits'
         ]
+
 
 class TenderSerializer(serializers.ModelSerializer):
     category = CategorySerializer(read_only=True)
@@ -83,6 +150,7 @@ class TenderSerializer(serializers.ModelSerializer):
             'mode', 'procedure', 'client', 'kind', 'domains', 'lots'
         ]
 
+
 class RelAgrementLotSerializer(serializers.ModelSerializer):
     agrement = AgrementSerializer(read_only=True)
     lot = LotSerializer(read_only=True)
@@ -91,6 +159,7 @@ class RelAgrementLotSerializer(serializers.ModelSerializer):
         model = RelAgrementLot
         fields = ['agrement', 'lot']
 
+
 class RelDomainTenderSerializer(serializers.ModelSerializer):
     domain = DomainSerializer(read_only=True)
     tender = TenderSerializer(read_only=True)
@@ -98,6 +167,7 @@ class RelDomainTenderSerializer(serializers.ModelSerializer):
     class Meta:
         model = RelDomainTender
         fields = ['domain', 'tender']
+
 
 class RelQualifLotSerializer(serializers.ModelSerializer):
     qualif = QualifSerializer(read_only=True)

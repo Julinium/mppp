@@ -303,3 +303,4 @@ def mergeTender(tender_data):
         Lot.objects.filter(title=title, number=number, tender=tender).delete()
 
     return tender
+

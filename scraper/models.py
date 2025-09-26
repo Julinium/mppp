@@ -11,6 +11,14 @@ class Agrement(models.Model):
     class Meta:
         db_table = 'agrement'
 
+    def save(self, , *args, **kwargs):
+        try:
+            self.short = self.name.split("-")[0].strip()
+        except:
+            traceback.print_exc()
+        
+        return super().save(*args, **kwargs)
+
 
 class Category(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -45,6 +53,19 @@ class Client(models.Model):
     class Meta:
         db_table = 'client'
 
+    def save(self, , *args, **kwargs):
+        try:
+            self.ministery = self.name.split("/")[0].strip()
+        except:
+            traceback.print_exc()
+        try:
+            r = self.name.split("/")[1].strip()
+            self.short = r.split("-")[0].strip()
+        except:
+            traceback.print_exc()
+        
+        return super().save(*args, **kwargs)
+
 
 class Contact(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -76,6 +97,14 @@ class Domain(models.Model):
 
     class Meta:
         db_table = 'domain'
+
+    def save(self, , *args, **kwargs):
+        try:
+            self.short = self.name.rsplit("-", 1)[-1].strip()
+        except:
+            traceback.print_exc()
+        
+        return super().save(*args, **kwargs)
 
 
 class Download(models.Model):
@@ -167,6 +196,14 @@ class Qualif(models.Model):
     class Meta:
         db_table = 'qualif'
 
+    def save(self, , *args, **kwargs):
+        try:
+            # self.short = self.name.rsplit("-", 1)[-1].strip()
+        except:
+            traceback.print_exc()
+        
+        return super().save(*args, **kwargs)
+
 
 class RelAgrementLot(models.Model):
     pk = models.CompositePrimaryKey('agrement', 'lot')
@@ -200,7 +237,7 @@ class RelQualifLot(models.Model):
 
 class Sample(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    time = models.DateTimeField(blank=True, null=True)
+    when = models.DateTimeField(blank=True, null=True)
     description = models.CharField(max_length=512, blank=True, null=True)
     lot = models.ForeignKey(Lot, on_delete=models.DO_NOTHING, related_name="samples", db_column='lot', blank=True, null=True)
 
@@ -253,15 +290,23 @@ class Tender(models.Model):
     def __str__():
         return self.title
 
-    # def save(self, , *args, **kwargs):
-    #     self.estimate = 0
-    #     self.bond = 0
-    #     self.plans_price = 0
-    #     self.reserved = False
-    #     self.variant = False
-    #     self.category = None
+    def save(self, , *args, **kwargs):
+        ll = self.lots
+        e, b = 0, 0
+        r, v = False, False
+        if len(ll) > 0:
+            l1 = ll[0]
+            r = l1.reserved
+            v = l1.variant
+            for l in ll:
+                e += l.estimate
+                b += l.bond
+        self.estimate = e
+        self.bond = b
+        self.reserved = r
+        self.variant = v
 
-        # return super().save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
 
 class Kind(models.Model):
@@ -272,6 +317,9 @@ class Kind(models.Model):
 
     class Meta:
         db_table = 'kind'
+
+    # def save(self, , *args, **kwargs):
+    #     return super().save(*args, **kwargs)
 
 
 class Utilizer(models.Model):
