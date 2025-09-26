@@ -9,7 +9,7 @@ load_dotenv(dotenv_path=env_path)
 
 
 # More verbose output
-DEBUG_MODE = True 
+# DEBUG_MODE = True 
 VERBOSITY = 1
 
 LOGS_LEVELS = {

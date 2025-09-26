@@ -8,7 +8,7 @@ env_path = BASE_DIR / '.env'
 load_dotenv(dotenv_path=env_path)
 
 SECRET_KEY = os.getenv("SECRET_KEY")
-DEBUG = os.getenv("DEBUG_MODE") == "True"
+# DEBUG = os.getenv("DEBUG_MODE") == "True"
 
 DATABASES = {
     'default': {
