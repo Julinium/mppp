@@ -4,7 +4,7 @@ import helper, linker, getter
 import constants as C
 
 IMPORT_LINKS = C.IMPORT_LINKS
-IMPORT_LINKS = True
+IMPORT_LINKS = False
 
 # helper.printBanner()
 helper.printMessage('INFO', 'worker', "========== The unlazy worker started working ==========", 1, 2)
@@ -20,7 +20,8 @@ if len(links) < 1:
     helper.printMessage('ERROR', 'worker', "========== Links list was empty ==========", 2, 2)
 
 
-if len(links) > 0:
+ll = len(links)
+if ll > 0:
     file_path = "exports/cons.json"
     i = 0
     with open(file_path, 'w') as file:
@@ -31,7 +32,7 @@ if len(links) > 0:
 
     for l in links:
         i += 1
-        helper.printMessage('DEBUG', 'worker', f"Getting JSON for link {i:03}", 1, 0)
+        helper.printMessage('DEBUG', 'worker', f"Getting JSON for link {i:03}/{ll:03}", 1, 0)
         jsono = getter.getJson(l)
         
         with open("exports/cons.json", 'a') as file:
@@ -41,9 +42,3 @@ if len(links) > 0:
     with open(file_path, 'a') as file:
         file.write('\n]')
 
-
-
-# File path (will be created if it doesn't exist)
-# 
-
-# Write JSON to file

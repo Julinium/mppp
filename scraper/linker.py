@@ -44,20 +44,34 @@ def page2Links(driver, page_number, pages):
     links = []
     try:
         i = 1
-        details_btn_xpath = '/html/body/form/div[3]/div[2]/div/div[5]/div[1]/div[2]/div[2]/table/tbody/tr[1]/td[6]/div/a[1]'
-        details_btn = driver.find_element(By.XPATH, details_btn_xpath)
+        body = driver.find_element(By.XPATH, '/html/body/form/div[3]/div[2]/div/div[5]/div[1]/div[2]/div[2]/table/tbody')
+        # details_btn_xpath = '/html/body/form/div[3]/div[2]/div/div[5]/div[1]/div[2]/div[2]/table/tbody/tr[1]/td[6]/div/a[1]'
+        # details_btn = driver.find_element(By.XPATH, details_btn_xpath)
+        details_btn_xpath = 'tr[1]/td[6]/div/a[1]'
+        details_btn = body.find_element(By.XPATH, details_btn_xpath)
         while details_btn != None:
             pub_date_xpath = details_btn_xpath.replace('td[6]/div/a[1]', 'td[2]/div[4]')
-            pub_date_element = driver.find_element(By.XPATH, pub_date_xpath)
+            pub_date_element = body.find_element(By.XPATH, pub_date_xpath)
             drat = details_btn.get_attribute("href").replace(C.LINK_PREFIX, '') #### 825152&orgAcronyme=q9t
             portal_id_text = drat.split(C.LINK_STITCH)[0]
             organism_text = drat.split(C.LINK_STITCH)[1]
-            helper.printMessage('DEBUG', 'linker.page2Links', f'### Getting link {page_number:03}.{i:03} = {portal_id_text}')
+            helper.printMessage('DEBUG', 'linker.page2Links', f'### Getting link {page_number:03}.{i:03} = {portal_id_text} ...')
             links.append([portal_id_text, organism_text, pub_date_element.get_attribute("innerText")])
+            helper.printMessage('DEBUG', 'linker.page2Links', f'+++ Got the link {page_number:03}.{i:03} = {portal_id_text}', 0, 1)
             i = 1 + i
-            details_btn_xpath = '/html/body/form/div[3]/div[2]/div/div[5]/div[1]/div[2]/div[2]/table/tbody/tr[' + str(i) + ']/td[6]/div/a[1]'
-            try: details_btn = driver.find_element(By.XPATH, details_btn_xpath)
-            except: details_btn = None
+            if i > int(C.LINES_PER_PAGE):
+                helper.printMessage('TRACE', 'linker.page2Links', f'--- That was the latest elemet from {int(C.LINES_PER_PAGE)}')
+                details_btn = None
+            else:
+                helper.printMessage('TRACE', 'linker.page2Links', f'### Checking for the next elemet: {page_number:03}.{i:03}')
+                # details_btn_xpath = '/html/body/form/div[3]/div[2]/div/div[5]/div[1]/div[2]/div[2]/table/tbody/tr[' + str(i) + ']/td[6]/div/a[1]'
+                details_btn_xpath = 'tr[' + str(i) + ']/td[6]/div/a[1]'
+                try: 
+                    details_btn = body.find_element(By.XPATH, details_btn_xpath)
+                    helper.printMessage('TRACE', 'linker.page2Links', f'+++ Found a next elemet: {page_number:03}.{i:03}')
+                except: 
+                    helper.printMessage('TRACE', 'linker.page2Links', f'--- Next elemet {page_number:03}.{i:03} not found.', 0, 1)
+                    details_btn = None
     except Exception:
         helper.printMessage('FATAL', 'linker.page2Links', f'Exception while getting links from page {page_number:03}', 1, 2)
         traceback.print_exc()
@@ -153,14 +167,18 @@ def getLinks(back_days=C.PORTAL_DDL_PAST_DAYS):
     links = page2Links(driver, i, pages)
     try: next_page_button = driver.find_element(By.ID, "ctl0_CONTENU_PAGE_resultSearch_PagerTop_ctl2")
     except: next_page_button = None
-    while next_page_button != None:                
+    while next_page_button != None:
         next_page_button.click()
         i += 1
-        # helper.printMessage('DEBUG', 'linker.getLinks', f'Reading links from page {i:03}/{pages:03} ... ')
         links += page2Links(driver, i, pages)
+        helper.printMessage('TRACE', 'linker.getLinks', f'### Looking for next page {i+1:03} ... ')
             
-        try : next_page_button = driver.find_element(By.ID, "ctl0_CONTENU_PAGE_resultSearch_PagerTop_ctl2")
-        except: next_page_button = None
+        try :
+            next_page_button = driver.find_element(By.ID, "ctl0_CONTENU_PAGE_resultSearch_PagerTop_ctl2")
+            helper.printMessage('TRACE', 'linker.getLinks', f'+++ Next page found {i+1:03}')
+        except: 
+            helper.printMessage('TRACE', 'linker.getLinks', f'--- Next page {i+1:03} not found', 0, 2)
+            next_page_button = None
 
     if driver: driver.quit()
     

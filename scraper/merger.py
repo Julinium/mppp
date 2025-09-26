@@ -9,15 +9,20 @@ from .serializers import (
     QualifSerializer, RelDomainTenderSerializer, RelAgrementLotSerializer, RelQualifLotSerializer
 )
 
+def formatData(json_data):
+    
+    return json_data
+
+
 @transaction.atomic
-def mergeTender(json_data):
+def mergeTender(tender_json):
     """
     Merge a nested JSON object into a Tender instance and its related objects in the database.
     Assumes no 'id' fields in the JSON. Deletes related objects (Lots, Meetings, etc.) that are
     absent in the JSON but present in the database.
 
     Args:
-        json_data (dict): Nested JSON object representing a Tender instance without IDs.
+        tender_json (dict): Nested JSON object representing a Tender instance without IDs.
 
     Returns:
         Tender: The created or updated Tender instance.
@@ -26,7 +31,7 @@ def mergeTender(json_data):
         serializers.ValidationError: If the JSON data is invalid.
     """
     # Step 1: Validate the JSON using TenderSerializer
-    tender_serializer = TenderSerializer(data=json_data)
+    tender_serializer = TenderSerializer(data=tender_json)
     tender_serializer.is_valid(raise_exception=True)
     validated_data = tender_serializer.validated_data
 
