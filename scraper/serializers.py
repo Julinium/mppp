@@ -1,7 +1,7 @@
 import uuid
 from rest_framework import serializers
 
-from .models import Tender, Lot, Agrement, Qualif, Type, Domain, Category, Client, Meeting, RelAgrementLot, RelDomainTender, RelQualifLot
+from .models import Tender, Lot, Agrement, Qualif, Kind, Domain, Category, Client, Meeting, RelAgrementLot, RelDomainTender, RelQualifLot
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -13,9 +13,9 @@ class ClientSerializer(serializers.ModelSerializer):
         model = Client
         fields = ['id', 'short', 'name', 'ministery', 'description']
 
-class TypeSerializer(serializers.ModelSerializer):
+class KindSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Type
+        model = Kind
         fields = ['id', 'short', 'name', 'description']
 
 class DomainSerializer(serializers.ModelSerializer):
@@ -67,7 +67,7 @@ class LotSerializer(serializers.ModelSerializer):
 class TenderSerializer(serializers.ModelSerializer):
     category = CategorySerializer(read_only=True)
     client = ClientSerializer(read_only=True)
-    type = TypeSerializer(read_only=True)
+    kind = KindSerializer(read_only=True)
     domains = DomainSerializer(many=True, read_only=True)
     lots = LotSerializer(many=True, read_only=True)
     
@@ -80,7 +80,7 @@ class TenderSerializer(serializers.ModelSerializer):
             'size_bytes', 'address_withdrawal', 'address_bidding', 
             'address_opening', 'contact_name', 'contact_phone', 'contact_email',
             'contact_fax', 'created', 'updated', 'cancelled', 'link', 'acronym',
-            'mode', 'procedure', 'client', 'type', 'domains', 'lots'
+            'mode', 'procedure', 'client', 'kind', 'domains', 'lots'
         ]
 
 class RelAgrementLotSerializer(serializers.ModelSerializer):
