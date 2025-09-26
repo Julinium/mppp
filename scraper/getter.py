@@ -86,7 +86,7 @@ def getJson(link_item):
     cons_repec = picto_src.strip().replace('themes/images/', '').replace('.gif', '')
 
     cance_span = soup.find('img', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_pictConsultationAnnulee')
-    cons_cance = True if cance_span else False
+    cons_cance = "Oui" if cance_span else NA_PLH
 
     category = None
     categ_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_categoriePrincipale')
@@ -109,12 +109,12 @@ def getJson(link_item):
         if cons_achet != NA_PLH:
             client = {"name": cons_achet}
 
-    type = None
-    type_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_annonce')
-    cons_type = type_span.get_text().strip() if type_span else NA_PLH
-    if cons_type and len(cons_type) > 3:
-        if cons_type != NA_PLH:
-            type = {"name": cons_type}
+    kind = None
+    kind_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_annonce')
+    cons_kind = kind_span.get_text().strip() if kind_span else NA_PLH
+    if cons_kind and len(cons_kind) > 3:
+        if cons_kind != NA_PLH:
+            kind = {"name": cons_kind}
     
     procedure = None
     proce_span = soup.find('span', id='ctl0_CONTENU_PAGE_idEntrepriseConsultationSummary_typeProcedure')
@@ -267,8 +267,8 @@ def getJson(link_item):
         "title": cons_objet,
         "lots_count": cons_nbrlo,
         "location": cons_lexec,
-        "client": cons_achet,
-        "type": type,
+        "client": client,
+        "kind": kind,
         "procedure": procedure,
         "mode": mode,
         "ebid_esign": cons_repec,

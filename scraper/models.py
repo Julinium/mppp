@@ -216,17 +216,17 @@ class Tender(models.Model):
     published = models.DateTimeField(blank=True, null=True)
     deadline = models.DateTimeField(blank=True, null=True)
 
-    lots_count = models.SmallIntegerField(blank=True, null=True)
-    estimate = models.DecimalField(max_digits=16, decimal_places=2, blank=True, null=True)
-    bond = models.DecimalField(max_digits=16, decimal_places=2, blank=True, null=True)
-    plans_price = models.DecimalField(max_digits=16, decimal_places=2, blank=True, null=True)
+    lots_count = models.SmallIntegerField(blank=True, null=True, default=0)
+    estimate = models.DecimalField(max_digits=16, decimal_places=2, blank=True, null=True, default=0)
+    bond = models.DecimalField(max_digits=16, decimal_places=2, blank=True, null=True, default=0)
+    plans_price = models.DecimalField(max_digits=16, decimal_places=2, blank=True, null=True, default=0)
     reserved = models.BooleanField(blank=True, null=True)
     variant = models.BooleanField(blank=True, null=True)
     category = models.ForeignKey(Category, on_delete=models.DO_NOTHING, related_name="tenders", db_column='category', blank=True, null=True)
 
     location = models.CharField(max_length=256, blank=True, null=True)
-    ebid = models.SmallIntegerField(blank=True, null=True, db_comment='1: Required, 0: Not required, Else: NA')
-    esign = models.SmallIntegerField(blank=True, null=True, db_comment='1: Required, 0: Not required, Else: NA')
+    ebid = models.SmallIntegerField(blank=True, null=True, default=9, db_comment='1: Required, 0: Not required, Else: NA')
+    esign = models.SmallIntegerField(blank=True, null=True, default=9, db_comment='1: Required, 0: Not required, Else: NA')
     size_read = models.CharField(max_length=32, blank=True, null=True)
     size_bytes = models.BigIntegerField(blank=True, null=True)
     address_withdrawal = models.CharField(max_length=512, blank=True, null=True)
@@ -238,13 +238,13 @@ class Tender(models.Model):
     contact_fax = models.CharField(max_length=64, blank=True, null=True)
     created = models.DateTimeField(blank=True, null=True, auto_now_add=True)
     updated = models.DateTimeField(blank=True, null=True)
-    cancelled = models.BooleanField(blank=True, null=True)
+    cancelled = models.BooleanField(blank=True, null=True, default=False)
     link = models.CharField(max_length=512, blank=True, null=True)
     acronym = models.CharField(max_length=4, blank=True, null=True)
     mode = models.ForeignKey(Mode, on_delete=models.DO_NOTHING, related_name='tenders', db_column='mode', blank=True, null=True)
     procedure = models.ForeignKey(Procedure, on_delete=models.DO_NOTHING, related_name='tenders', db_column='procedure', blank=True, null=True)
     client = models.ForeignKey(Client, on_delete=models.DO_NOTHING, related_name='tenders', db_column='client', blank=True, null=True)
-    type = models.ForeignKey('Type', on_delete=models.DO_NOTHING, related_name='tenders', db_column='type', blank=True, null=True)
+    kind = models.ForeignKey('Kind', on_delete=models.DO_NOTHING, related_name='tenders', db_column='kind', blank=True, null=True)
     domains = models.ManyToManyField('Domain', through='RelDomainTender', related_name='tenders')
 
     class Meta:
@@ -264,14 +264,14 @@ class Tender(models.Model):
         # return super().save(*args, **kwargs)
 
 
-class Type(models.Model):
+class Kind(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     short = models.CharField(max_length=32, blank=True, null=True)
     name = models.CharField(max_length=512, blank=True, null=True)
     # description = models.CharField(max_length=128, blank=True, null=True)
 
     class Meta:
-        db_table = 'type'
+        db_table = 'kind'
 
 
 class Utilizer(models.Model):

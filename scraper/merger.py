@@ -1,44 +1,99 @@
+import traceback
+
 from rest_framework import serializers
 from django.db import transaction
 from .models import (Tender, Lot, Meeting, Domain, Category, Client, 
-    Type, Agrement, Qualif, RelDomainTender, RelAgrementLot, RelQualifLot
+    Kind, Agrement, Qualif, RelDomainTender, RelAgrementLot, RelQualifLot
 )
 from .serializers import (
     TenderSerializer, LotSerializer, MeetingSerializer, DomainSerializer,
-    CategorySerializer, ClientSerializer, TypeSerializer, AgrementSerializer,
+    CategorySerializer, ClientSerializer, KindSerializer, AgrementSerializer,
     QualifSerializer, RelDomainTenderSerializer, RelAgrementLotSerializer, RelQualifLotSerializer
 )
 
-def formatData(json_data):
-    
-    return json_data
+
+
+def formatJson2Data(tender_json):
+    j = tender_json
+    try:
+        j["published"] = helper.getDateTime(j["published"])
+        j["deadline"] = helper.getDateTime(j["deadline"])
+        j["cancelled"] = j["cancelled"] == "Oui"
+        j["plans_price"] = helper.getAmount(j["plans_price"])
+        j["acronym"] = j["link"].split("=")[1]
+
+        ebs = j["ebid_esign"] # 1: Required, 0: Not required, Else: NA
+        match ebs:  # Look at the image ...
+            case "reponse-elec-oblig": # cons_repec = 'RO'
+                j["ebid"] = 1
+                j["esign"] = 0                
+            case "reponse-elec": #cons_repec = 'OO'
+                j["ebid"] = 0
+                j["esign"] = 0
+            case "reponse-elec-oblig-avec-signature": #cons_repec = 'RR'
+                j["ebid"] = 1
+                j["esign"] = 1
+            case "reponse-elec-avec-signature": # cons_repec = 'OR'
+                j["ebid"] = 0
+                j["esign"] = 1
+            # case "reponse-elec-non": # cons_repec = 'I'
+
+        ll = j["lots"]
+        for l in ll:
+            l["estimate"] = helper.getAmount(l["estimate"])
+            l["bond"] = helper.getAmount(l["bond"])
+            l["variant"] = l["variant"] == "Oui"
+            l["reserved"] = l["reserved"] == "Oui"
+            ss = l["samples"]
+            if len(ss) > 0:
+                for s in ss:
+                    s["when"] = helper.getDateTime(s["when"])
+                l["samples"] = ss
+            mm = l["meetings"]
+            if len(mm) > 0:
+                for m in mm:
+                    m["when"] = helper.getDateTime(m["when"])
+                l["meetings"] = mm
+            vv = l["visits"]
+            if len(vv) > 0:
+                for v in vv:
+                    v["when"] = helper.getDateTime(v["when"])
+                l["visits"] = vv
+        j["lots"] = ll
+
+    except:
+        traceback.print_exc()
+
+    return j
+
+
 
 
 @transaction.atomic
-def mergeTender(tender_json):
+def mergeTender(tender_data):
     """
-    Merge a nested JSON object into a Tender instance and its related objects in the database.
-    Assumes no 'id' fields in the JSON. Deletes related objects (Lots, Meetings, etc.) that are
-    absent in the JSON but present in the database.
+    # Merge a nested JSON object into a Tender instance and its related objects in the database.
+    # Assumes no 'id' fields in the JSON. Deletes related objects (Lots, Meetings, etc.) that are
+    # absent in the JSON but present in the database.
 
-    Args:
-        tender_json (dict): Nested JSON object representing a Tender instance without IDs.
+    # Args:
+    #     tender_data (dict): Nested JSON object representing a Tender instance without IDs.
 
-    Returns:
-        Tender: The created or updated Tender instance.
+    # Returns:
+    #     Tender: The created or updated Tender instance.
 
-    Raises:
-        serializers.ValidationError: If the JSON data is invalid.
+    # Raises:
+    #     serializers.ValidationError: If the JSON data is invalid.
     """
     # Step 1: Validate the JSON using TenderSerializer
-    tender_serializer = TenderSerializer(data=tender_json)
+    tender_serializer = TenderSerializer(data=tender_data)
     tender_serializer.is_valid(raise_exception=True)
     validated_data = tender_serializer.validated_data
 
-    # Step 2: Handle foreign key relationships (category, client, type)
+    # Step 2: Handle foreign key relationships (category, client, kind)
     category_data = validated_data.pop('category', None)
     client_data = validated_data.pop('client', None)
-    type_data = validated_data.pop('type', None)
+    kind_data = validated_data.pop('kind', None)
 
     # Handle Category
     category = None
@@ -68,21 +123,21 @@ def mergeTender(tender_json):
         client_serializer.is_valid(raise_exception=True)
         client = client_serializer.save()
 
-    # Handle Type
-    type_obj = None
-    if type_data:
-        short = type_data.get('short')
-        name = type_data.get('name')
-        if short and Type.objects.filter(short=short).exists():
-            type_obj = Type.objects.get(short=short)
-            type_serializer = TypeSerializer(type_obj, data=type_data, partial=True)
-        elif name and Type.objects.filter(name=name).exists():
-            type_obj = Type.objects.get(name=name)
-            type_serializer = TypeSerializer(type_obj, data=type_data, partial=True)
+    # Handle Kind
+    kind = None
+    if kind_data:
+        short = kind_data.get('short')
+        name = kind_data.get('name')
+        if short and Kind.objects.filter(short=short).exists():
+            kind = Kind.objects.get(short=short)
+            kind_serializer = KindSerializer(kind, data=kind_data, partial=True)
+        elif name and Kind.objects.filter(name=name).exists():
+            kind = Kind.objects.get(name=name)
+            kind_serializer = KindSerializer(kind, data=kind_data, partial=True)
         else:
-            type_serializer = TypeSerializer(data=type_data)
-        type_serializer.is_valid(raise_exception=True)
-        type_obj = type_serializer.save()
+            kind_serializer = KindSerializer(data=kind_data)
+        kind_serializer.is_valid(raise_exception=True)
+        kind = kind_serializer.save()
 
     # Step 3: Create or update Tender
     reference = validated_data.get('reference')
@@ -92,13 +147,10 @@ def mergeTender(tender_json):
     if chrono and Tender.objects.filter(chrono=chrono).exists():
         tender = Tender.objects.get(chrono=chrono)
         tender_serializer = TenderSerializer(tender, data=validated_data, partial=True)
-    # elif title and chrono and Tender.objects.filter(title=title, chrono=chrono).exists():
-    #     tender = Tender.objects.get(title=title, chrono=chrono)
-    #     tender_serializer = TenderSerializer(tender, data=validated_data, partial=True)
     else:
         tender_serializer = TenderSerializer(data=validated_data)
     tender_serializer.is_valid(raise_exception=True)
-    tender = tender_serializer.save(category=category, client=client, type=type_obj)
+    tender = tender_serializer.save(category=category, client=client, kind=kind)
 
     # Step 4: Handle Domains (many-to-many)
     domains_data = validated_data.pop('domains', [])
@@ -110,9 +162,6 @@ def mergeTender(tender_json):
         if name and Domain.objects.filter(name=name).exists():
             domain = Domain.objects.get(name=name)
             domain_serializer = DomainSerializer(domain, data=domain_data, partial=True)
-        # elif short and Domain.objects.filter(short=short).exists():
-        #     domain = Domain.objects.get(short=short)
-        #     domain_serializer = DomainSerializer(domain, data=domain_data, partial=True)
         else:
             domain_serializer = DomainSerializer(data=domain_data)
         domain_serializer.is_valid(raise_exception=True)
