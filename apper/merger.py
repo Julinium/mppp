@@ -1,14 +1,18 @@
 import traceback
-
 from rest_framework import serializers
 from django.db import transaction
-from .models import (Tender, Lot, Meeting, Domain, Category, Client, 
-    Kind, Agrement, Qualif, RelDomainTender, RelAgrementLot, RelQualifLot
+
+
+from .models import (
+    Tender, Lot, Meeting, Domain, Category, Client, Kind, Agrement, 
+    Qualif, RelDomainTender, RelAgrementLot, RelQualifLot
 )
+
 from .serializers import (
-    TenderSerializer, LotSerializer, MeetingSerializer, DomainSerializer,
-    CategorySerializer, ClientSerializer, KindSerializer, AgrementSerializer,
-    QualifSerializer, RelDomainTenderSerializer, RelAgrementLotSerializer, RelQualifLotSerializer
+    TenderSerializer, LotSerializer, MeetingSerializer, DomainSerializer, 
+    CategorySerializer, ClientSerializer, KindSerializer, AgrementSerializer, 
+    QualifSerializer, RelDomainTenderSerializer, RelAgrementLotSerializer, 
+    RelQualifLotSerializer
 )
 
 
@@ -67,8 +71,6 @@ def json2Data(tender_json):
     return j
 
 
-
-
 @transaction.atomic
 def mergeTender(tender_data):
     """
@@ -85,9 +87,10 @@ def mergeTender(tender_data):
     # Raises:
     #     serializers.ValidationError: If the JSON data is invalid.
     """
-    data = json2Data(tender_data)
+
+    formatted_data = json2Data(tender_data)
     # Step 1: Validate the JSON using TenderSerializer
-    tender_serializer = TenderSerializer(data=tender_data)
+    tender_serializer = TenderSerializer(data=formatted_data)
     tender_serializer.is_valid(raise_exception=True)
     validated_data = tender_serializer.validated_data
 
@@ -114,7 +117,7 @@ def mergeTender(tender_data):
     client = None
     if client_data:
         name = client_data.get('name')
-        elif name and Client.objects.filter(name=name).exists():
+        if name and Client.objects.filter(name=name).exists():
             client = Client.objects.get(name=name)
             client_serializer = ClientSerializer(client, data=client_data, partial=True)
         else:
@@ -126,7 +129,7 @@ def mergeTender(tender_data):
     kind = None
     if kind_data:
         name = kind_data.get('name')
-        elif name and Kind.objects.filter(name=name).exists():
+        if name and Kind.objects.filter(name=name).exists():
             kind = Kind.objects.get(name=name)
             kind_serializer = KindSerializer(kind, data=kind_data, partial=True)
         else:
@@ -138,7 +141,7 @@ def mergeTender(tender_data):
     mode = None
     if mode_data:
         name = mode_data.get('name')
-        elif name and Mode.objects.filter(name=name).exists():
+        if name and Mode.objects.filter(name=name).exists():
             mode = Mode.objects.get(name=name)
             mode_serializer = ModeSerializer(mode, data=mode_data, partial=True)
         else:
@@ -150,7 +153,7 @@ def mergeTender(tender_data):
     procedure = None
     if procedure_data:
         name = procedure_data.get('name')
-        elif name and Procedure.objects.filter(name=name).exists():
+        if name and Procedure.objects.filter(name=name).exists():
             procedure = Procedure.objects.get(name=name)
             procedure_serializer = ProcedureSerializer(procedure, data=procedure_data, partial=True)
         else:

@@ -6,7 +6,6 @@ class Agrement(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     short = models.CharField(max_length=32, blank=True, null=True)
     name = models.CharField(max_length=512, blank=True, null=True)
-    # description = models.CharField(max_length=128, blank=True, null=True)
 
     class Meta:
         db_table = 'agrement'
@@ -48,7 +47,6 @@ class Client(models.Model):
     short = models.CharField(max_length=32, blank=True, null=True)
     name = models.CharField(max_length=512, blank=True, null=True)
     ministery = models.CharField(max_length=16, blank=True, null=True)
-    # description = models.CharField(max_length=128, blank=True, null=True)
 
     class Meta:
         db_table = 'client'
@@ -93,7 +91,6 @@ class Domain(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     short = models.CharField(max_length=32, blank=True, null=True)
     name = models.CharField(max_length=512, blank=True, null=True)
-    # description = models.CharField(max_length=128, blank=True, null=True)
 
     class Meta:
         db_table = 'domain'
@@ -191,7 +188,6 @@ class Qualif(models.Model):
     name = models.CharField(max_length=512, blank=True, null=True)
     domain = models.CharField(max_length=32, blank=True, null=True)
     classe = models.CharField(max_length=8, blank=True, null=True)
-    # description = models.CharField(max_length=128, blank=True, null=True)
 
     class Meta:
         db_table = 'qualif'
@@ -318,13 +314,9 @@ class Kind(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     short = models.CharField(max_length=32, blank=True, null=True)
     name = models.CharField(max_length=512, blank=True, null=True)
-    # description = models.CharField(max_length=128, blank=True, null=True)
 
     class Meta:
         db_table = 'kind'
-
-    # def save(self, *args, **kwargs):
-    #     return super().save(*args, **kwargs)
 
 
 class Utilizer(models.Model):
