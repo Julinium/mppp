@@ -119,19 +119,19 @@ def saveTender(tender_data):
 
     ## Handle Category
     category = None
-    helper.printMessage('TRACE', 'merger.saveTender', "### Handling Category ... ")
+    # helper.printMessage('TRACE', 'merger.saveTender', "### Handling Category ... ")
     if category_data:
-        helper.printMessage('TRACE', 'merger.saveTender', "+++ Got Category data. Analyzing ... ")
+        # helper.printMessage('TRACE', 'merger.saveTender', "+++ Got Category data. Analyzing ... ")
         label = category_data.get('label')
         if label and Category.objects.filter(label=label).exists():
             category = Category.objects.get(label=label)
             category_serializer = CategorySerializer(category, data=category_data, partial=True)
-            helper.printMessage('DEBUG', 'merger.saveTender', "+++ Category already exists. Updating.")
+            helper.printMessage('DEBUG', 'merger.saveTender', "+++ Category already exists. Skipping.")
         else:
             category_serializer = CategorySerializer(data=category_data)
             helper.printMessage('DEBUG', 'merger.saveTender', f"+++ Category to be created: {label}")
-        category_serializer.is_valid(raise_exception=True)
-        category = category_serializer.save()
+            category_serializer.is_valid(raise_exception=True)
+            category = category_serializer.save()
     else:
         helper.printMessage('WARN', 'merger.saveTender', "--- Could not pop out Category data!", 1, 2)
 
@@ -142,12 +142,12 @@ def saveTender(tender_data):
         if name and Client.objects.filter(name=name).exists():
             client = Client.objects.get(name=name)
             client_serializer = ClientSerializer(client, data=client_data, partial=True)
-            helper.printMessage('DEBUG', 'merger.saveTender', "+++ Client already exists. Updating.")
+            helper.printMessage('DEBUG', 'merger.saveTender', "+++ Client already exists. Skipping.")
         else:
             client_serializer = ClientSerializer(data=client_data)
             helper.printMessage('DEBUG', 'merger.saveTender', f"+++ Client to be created: {name}")
-        client_serializer.is_valid(raise_exception=True)
-        client = client_serializer.save()
+            client_serializer.is_valid(raise_exception=True)
+            client = client_serializer.save()
 
     ## Handle Kind
     kind = None
@@ -156,12 +156,12 @@ def saveTender(tender_data):
         if name and Kind.objects.filter(name=name).exists():
             kind = Kind.objects.get(name=name)
             kind_serializer = KindSerializer(kind, data=kind_data, partial=True)
-            helper.printMessage('DEBUG', 'merger.saveTender', "+++ Procedure Type already exists. Updating.")
+            helper.printMessage('DEBUG', 'merger.saveTender', "+++ Procedure Type already exists. Skipping.")
         else:
             kind_serializer = KindSerializer(data=kind_data)
             helper.printMessage('DEBUG', 'merger.saveTender', f"+++ Procedure Type to be created: {name}")
-        kind_serializer.is_valid(raise_exception=True)
-        kind = kind_serializer.save()
+            kind_serializer.is_valid(raise_exception=True)
+            kind = kind_serializer.save()
 
     ## Handle Mode
     mode = None
@@ -170,12 +170,12 @@ def saveTender(tender_data):
         if name and Mode.objects.filter(name=name).exists():
             mode = Mode.objects.get(name=name)
             mode_serializer = ModeSerializer(mode, data=mode_data, partial=True)
-            helper.printMessage('DEBUG', 'merger.saveTender', "+++ Awarding Mode already exists. Updating.")
+            helper.printMessage('DEBUG', 'merger.saveTender', "+++ Awarding Mode already exists. Skipping.")
         else:
             mode_serializer = ModeSerializer(data=mode_data)
             helper.printMessage('DEBUG', 'merger.saveTender', f"+++ Awarding Mode to be created: {name}")
-        mode_serializer.is_valid(raise_exception=True)
-        mode = mode_serializer.save()
+            mode_serializer.is_valid(raise_exception=True)
+            mode = mode_serializer.save()
 
     ## Handle Procedure
     procedure = None
@@ -184,12 +184,12 @@ def saveTender(tender_data):
         if name and Procedure.objects.filter(name=name).exists():
             procedure = Procedure.objects.get(name=name)
             procedure_serializer = ProcedureSerializer(procedure, data=procedure_data, partial=True)
-            helper.printMessage('DEBUG', 'merger.saveTender', "+++ Procedure already exists. Updating.")
+            helper.printMessage('DEBUG', 'merger.saveTender', "+++ Procedure already exists. Skipping.")
         else:
             procedure_serializer = ProcedureSerializer(data=procedure_data)
             helper.printMessage('DEBUG', 'merger.saveTender', f"+++ Procedure to be created: {name}")
-        procedure_serializer.is_valid(raise_exception=True)
-        procedure = procedure_serializer.save()
+            procedure_serializer.is_valid(raise_exception=True)
+            procedure = procedure_serializer.save()
 
 
     # Step x: Create or update Tender
@@ -216,12 +216,12 @@ def saveTender(tender_data):
         if name and Domain.objects.filter(name=name).exists():
             domain = Domain.objects.get(name=name)
             domain_serializer = DomainSerializer(domain, data=domain_data, partial=True)
-            helper.printMessage('DEBUG', 'merger.saveTender', "+++ Domain of Activiry already exists. Updating.")
+            helper.printMessage('DEBUG', 'merger.saveTender', "+++ Domain of Activiry already exists. Skipping.")
         else:
             domain_serializer = DomainSerializer(data=domain_data)
             helper.printMessage('DEBUG', 'merger.saveTender', f"+++ Domain of Activiry to be created: {name}")
-        domain_serializer.is_valid(raise_exception=True)
-        domain = domain_serializer.save()
+            domain_serializer.is_valid(raise_exception=True)
+            domain = domain_serializer.save()
         json_domain_keys.add((domain.name))
         RelDomainTender.objects.get_or_create(domain=domain, tender=tender)
 

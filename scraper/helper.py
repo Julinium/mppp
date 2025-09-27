@@ -120,19 +120,27 @@ def getDateTime(datetime_str):
 
     """
 
+
+    rabat_tz = pytz.timezone("Africa/Casablanca")
+    rabat_dt = rabat_tz.localize(naive_dt)
+
     if len(datetime_str) == 16:
-        return datetime.strptime(datetime_str, '%d/%m/%Y %H:%M')
+        naive_dt = datetime.strptime(datetime_str, '%d/%m/%Y %H:%M')
+        rabat_dt = rabat_tz.localize(naive_dt)
+        return rabat_dt
     if len(datetime_str) == 10:
-        return datetime.strptime(datetime_str, '%d/%m/%Y')
+        naive_dt = datetime.strptime(datetime_str, '%d/%m/%Y')
+        rabat_dt = rabat_tz.localize(naive_dt)
+        return rabat_dt
     return None
 
 
-def reading2LocalTime(reading, zonens="Africa/Casablanca"):
-    if reading == None: return datetime.now()
-    naive_datetime = getDateTime(reading) if reading != None else None
-    local_tz = pytz.timezone(zonens)
-    localized_datetime = local_tz.localize(naive_datetime)
-    return localized_datetime.astimezone(pytz.UTC)
+# def reading2LocalTime(reading, zonens="Africa/Casablanca"):
+#     if reading == None: return datetime.now()
+#     naive_datetime = getDateTime(reading) if reading != None else None
+#     local_tz = pytz.timezone(zonens)
+#     localized_datetime = local_tz.localize(naive_datetime)
+#     return localized_datetime.astimezone(pytz.UTC)
 
 
 def get_total_folder_size(folder_path):
