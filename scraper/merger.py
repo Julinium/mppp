@@ -104,7 +104,6 @@ def saveTender(tender_data):
 
     formatted_data = json2Data(tender_data)
     helper.printMessage('DEBUG', 'merger.saveTender', "### Started saving formatted date", 1, 0)
-    # print(formatted_data)
 
     # Step x: Validate the JSON using TenderSerializer
     tender_serializer = TenderSerializer(data=formatted_data)
@@ -112,11 +111,6 @@ def saveTender(tender_data):
     validated_data = tender_serializer.validated_data
 
     # Step x: Handle foreign key relationships (category, client, kind, mode, procedure)
-    # category_data = validated_data.pop('category', None)
-    # client_data = validated_data.pop('client', None)
-    # kind_data = validated_data.pop('kind', None)
-    # mode_data = validated_data.pop('mode', None)
-    # procedure_data = validated_data.pop('procedure', None)
     category_data = formatted_data['category']
     client_data = formatted_data['client']
     kind_data = formatted_data['kind']
@@ -258,8 +252,8 @@ def saveTender(tender_data):
 
     for lot_data in lots_data:
         # Update Tender fields
-        estimate_total += l.estimate
-        bond_total += l.bond
+        estimate_total += lot_data["estimate"]
+        bond_total += lot_data["bond"]
 
         # Handle nested Category for Lot
         lot_category_data = lot_data["category"]

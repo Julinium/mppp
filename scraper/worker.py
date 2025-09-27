@@ -7,9 +7,8 @@ from . import constants as C
 IMPORT_LINKS = C.IMPORT_LINKS
 REFRESH_EXISTING = C.REFRESH_EXISTING
 
-REFRESH_EXISTING = False
-IMPORT_LINKS = False
-# SKIP_EXISTING = not REFRESH_EXISTING
+REFRESH_EXISTING = True
+IMPORT_LINKS = True
 
 # helper.printBanner()
 helper.printMessage('INFO', 'worker', "========== The unlazy worker started working ==========", 1, 2)
