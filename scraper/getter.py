@@ -37,7 +37,7 @@ def getJson(link_item, skipExisting=False):
     if skipExisting:
         e = Tender.objects.filter(chrono=link_item[0])
         if e.first():
-            helper.printMessage('DEBUG', 'getter.getJson', f'Tender {link_item[0]} exists and Skipping is enabled. Skipping.', 0, 1)
+            helper.printMessage('DEBUG', 'getter.getJson', f'Tender {link_item[0]} exists and Skipping ON.', 0, 1)
             return None
     
 
