@@ -1,13 +1,23 @@
 import re, requests
 from bs4 import BeautifulSoup, Comment
 
-import helper
-import constants as C
+from . import helper
+from . import constants as C
+
+import os
+import django
+from django.conf import settings
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "scraper.settings")
+django.setup()
+
+
+from .models import Tender
 
 # NA_PLH = C.NA_PLH
 NA_PLH = None
 
-def getJson(link_item):
+def getJson(link_item, skipExisting=False):
 
     """
     # Synapsis:
@@ -18,10 +28,18 @@ def getJson(link_item):
         JSON object representing data.
     """
 
+    
+
     if link_item == None or len(link_item) < 3:
         helper.printMessage('ERROR', 'getter.getJson', 'Got an invalid link item.')
         return None
     helper.printMessage('DEBUG', 'getter.getJson', f'Getting objects for item id = {link_item[0]}')
+    if skipExisting:
+        e = Tender.objects.filter(chrono=link_item[0])
+        if e.first():
+            helper.printMessage('DEBUG', 'getter.getJson', f'Tender {link_item[0]} exists and Skipping is enabled. Skipping.', 0, 1)
+            return None
+    
 
     cons_uri = f"{link_item[0]}{C.LINK_STITCH}{link_item[1]}"
     cons_link = f'{C.LINK_PREFIX}{cons_uri}'

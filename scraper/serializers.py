@@ -1,9 +1,11 @@
 import uuid
 from rest_framework import serializers
 
+from . import helper
+
 from .models import (
-    Tender, Lot, Agrement, Qualif, Kind, Domain, Download, 
-    Category, Change, Client, Contact, Meeting, Favo, Mode, Procedure,
+    Tender, Lot, Agrement, Qualif, Kind, Domain, Download, Mode, Procedure, 
+    Category, Change, Client, Contact, Meeting, Sample, Visit, Favo,
     RelAgrementLot, RelDomainTender, RelQualifLot
 )
 
@@ -62,14 +64,6 @@ class FavoSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'when', 'ua', 'ip', 'tender', 'comment', 'utilizer'
             ]
-
-
- = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-     = models.DateTimeField(blank=True, null=True)
-     = models.CharField(max_length=512, blank=True, null=True)
-     = models.CharField(max_length=256, blank=True, null=True)
-     = models.CharField(max_length=48, blank=True, null=True)
-     = models.ForeignKey('Utilizer', on_delete=models.DO_NOTHING, related_name="favos", db_column='utilizer', blank=True, null=True)
 
 
 class AgrementSerializer(serializers.ModelSerializer):
@@ -151,6 +145,28 @@ class TenderSerializer(serializers.ModelSerializer):
             'contact_fax', 'created', 'updated', 'cancelled', 'link', 'acronym', 
             'category', 'mode', 'procedure', 'client', 'kind', 'domains', 'lots'
         ]
+
+
+    def update(self, instance, validated_data):
+        # Dictionary to store changes for logging
+        changes = {}
+
+        # Compare each field in validated_data with the current instance
+        for field, new_value in validated_data.items():
+            old_value = getattr(instance, field)
+            if old_value != new_value:
+                changes[field] = {
+                    'old_value': old_value,
+                    'new_value': new_value
+                }
+
+        # Log changes if any
+        if changes:
+            log_message = f"Tender {instance.id} updated. Changes: {changes}"
+            helper.printMessage('INFO', 'serializer.TenderSerializer', log_message, 2, 3)
+            
+
+        return super().update(instance, validated_data)
 
 
 class RelAgrementLotSerializer(serializers.ModelSerializer):

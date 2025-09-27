@@ -1,11 +1,13 @@
+
 import uuid
 from django.db import models
 
 
+
 class Agrement(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    short = models.CharField(max_length=32, blank=True, null=True)
-    name = models.CharField(max_length=512, blank=True, null=True)
+    short = models.CharField(max_length=128, blank=True, null=True)
+    name = models.CharField(max_length=2048, blank=True, null=True)
 
     class Meta:
         db_table = 'agrement'
@@ -21,7 +23,7 @@ class Agrement(models.Model):
 
 class Category(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    label = models.CharField(max_length=32, blank=True, null=True)
+    label = models.CharField(max_length=128, blank=True, null=True)
     # rank = models.SmallIntegerField(blank=True, null=True)
     # description = models.CharField(max_length=128, blank=True, null=True)
 
@@ -44,8 +46,8 @@ class Change(models.Model):
 
 class Client(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    short = models.CharField(max_length=32, blank=True, null=True)
-    name = models.CharField(max_length=512, blank=True, null=True)
+    short = models.CharField(max_length=128, blank=True, null=True)
+    name = models.CharField(max_length=2048, blank=True, null=True)
     ministery = models.CharField(max_length=16, blank=True, null=True)
 
     class Meta:
@@ -73,14 +75,14 @@ class Contact(models.Model):
     email = models.CharField(max_length=128, blank=True, null=True)
     phone = models.CharField(max_length=64, blank=True, null=True)
     title = models.CharField(max_length=256, blank=True, null=True)
-    message = models.CharField(max_length=1024, blank=True, null=True)
+    message = models.CharField(max_length=4096, blank=True, null=True)
     method = models.CharField(max_length=8, blank=True, null=True)
     newsletter = models.BooleanField(blank=True, null=True)
     promos = models.BooleanField(blank=True, null=True)
-    comment = models.CharField(max_length=512, blank=True, null=True)
-    actions = models.CharField(max_length=512, blank=True, null=True)
+    comment = models.CharField(max_length=2048, blank=True, null=True)
+    actions = models.CharField(max_length=2048, blank=True, null=True)
     solved = models.BooleanField(blank=True, null=True)
-    file = models.CharField(max_length=512, blank=True, null=True)
+    file = models.CharField(max_length=2048, blank=True, null=True)
     utilizer = models.ForeignKey('Utilizer', on_delete=models.DO_NOTHING, related_name="contacts", db_column='utilizer', blank=True, null=True)
 
     class Meta:
@@ -89,15 +91,15 @@ class Contact(models.Model):
 
 class Domain(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    short = models.CharField(max_length=32, blank=True, null=True)
-    name = models.CharField(max_length=512, blank=True, null=True)
+    short = models.CharField(max_length=2048, blank=True, null=True)
+    name = models.CharField(max_length=2048, blank=True, null=True)
 
     class Meta:
         db_table = 'domain'
 
     def save(self, *args, **kwargs):
         try:
-            self.short = self.name.rsplit("-", 1)[-1].strip()
+            self.short = self.name.rsplit("/", 1)[-1].strip()
         except:
             traceback.print_exc()
         
@@ -120,7 +122,7 @@ class Download(models.Model):
 class Favo(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     when = models.DateTimeField(blank=True, null=True)
-    comment = models.CharField(max_length=512, blank=True, null=True)
+    comment = models.CharField(max_length=2048, blank=True, null=True)
     ua = models.CharField(max_length=256, blank=True, null=True)
     ip = models.CharField(max_length=48, blank=True, null=True)
     utilizer = models.ForeignKey('Utilizer', on_delete=models.DO_NOTHING, related_name="favos", db_column='utilizer', blank=True, null=True)
@@ -133,8 +135,8 @@ class Favo(models.Model):
 class Lot(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     number = models.SmallIntegerField(blank=True, null=True)
-    title = models.CharField(max_length=512)
-    description = models.CharField(max_length=512, blank=True, null=True)
+    title = models.CharField(max_length=4096)
+    description = models.CharField(max_length=4096, blank=True, null=True)
     
     estimate = models.DecimalField(max_digits=16, decimal_places=2, blank=True, null=True)
     bond = models.DecimalField(max_digits=16, decimal_places=2, blank=True, null=True)
@@ -155,7 +157,7 @@ class Lot(models.Model):
 class Meeting(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     when = models.DateTimeField(blank=True, null=True)
-    description = models.CharField(max_length=512, blank=True, null=True)
+    description = models.CharField(max_length=2048, blank=True, null=True)
     lot = models.ForeignKey('Lot', on_delete=models.DO_NOTHING, related_name="meetings", db_column='lot', blank=True, null=True)
 
     class Meta:
@@ -164,8 +166,8 @@ class Meeting(models.Model):
 
 class Mode(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    short = models.CharField(max_length=32, blank=True, null=True)
-    name = models.CharField(max_length=512, blank=True, null=True)
+    short = models.CharField(max_length=128, blank=True, null=True)
+    name = models.CharField(max_length=2048, blank=True, null=True)
     # description = models.CharField(max_length=128, blank=True, null=True)
 
     class Meta:
@@ -174,8 +176,8 @@ class Mode(models.Model):
 
 class Procedure(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    short = models.CharField(max_length=32, blank=True, null=True)
-    name = models.CharField(max_length=512, blank=True, null=True)
+    short = models.CharField(max_length=128, blank=True, null=True)
+    name = models.CharField(max_length=2048, blank=True, null=True)
     # description = models.CharField(max_length=128, blank=True, null=True)
 
     class Meta:
@@ -184,9 +186,9 @@ class Procedure(models.Model):
 
 class Qualif(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    short = models.CharField(max_length=32, blank=True, null=True)
-    name = models.CharField(max_length=512, blank=True, null=True)
-    domain = models.CharField(max_length=32, blank=True, null=True)
+    short = models.CharField(max_length=128, blank=True, null=True)
+    name = models.CharField(max_length=2048, blank=True, null=True)
+    domain = models.CharField(max_length=128, blank=True, null=True)
     classe = models.CharField(max_length=8, blank=True, null=True)
 
     class Meta:
@@ -238,7 +240,7 @@ class RelQualifLot(models.Model):
 class Sample(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     when = models.DateTimeField(blank=True, null=True)
-    description = models.CharField(max_length=512, blank=True, null=True)
+    description = models.CharField(max_length=4096, blank=True, null=True)
     lot = models.ForeignKey('Lot', on_delete=models.DO_NOTHING, related_name="samples", db_column='lot', blank=True, null=True)
 
     class Meta:
@@ -248,7 +250,7 @@ class Sample(models.Model):
 class Tender(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     chrono = models.CharField(max_length=16, blank=True, null=True)
-    title = models.CharField(max_length=1024, blank=True, null=True)
+    title = models.CharField(max_length=4096, blank=True, null=True)
     reference = models.CharField(max_length=128, blank=True, null=True)
     published = models.DateTimeField(blank=True, null=True)
     deadline = models.DateTimeField(blank=True, null=True)
@@ -263,17 +265,17 @@ class Tender(models.Model):
     location = models.CharField(max_length=256, blank=True, null=True)
     ebid = models.SmallIntegerField(blank=True, null=True, default=9, db_comment='1: Required, 0: Not required, Else: NA')
     esign = models.SmallIntegerField(blank=True, null=True, default=9, db_comment='1: Required, 0: Not required, Else: NA')
-    size_read = models.CharField(max_length=32, blank=True, null=True)
+    size_read = models.CharField(max_length=128, blank=True, null=True)
     size_bytes = models.BigIntegerField(blank=True, null=True)
-    address_withdrawal = models.CharField(max_length=512, blank=True, null=True)
-    address_bidding = models.CharField(max_length=512, blank=True, null=True)
-    address_opening = models.CharField(max_length=512, blank=True, null=True)
+    address_withdrawal = models.CharField(max_length=2048, blank=True, null=True)
+    address_bidding = models.CharField(max_length=2048, blank=True, null=True)
+    address_opening = models.CharField(max_length=2048, blank=True, null=True)
     contact_name = models.CharField(max_length=64, blank=True, null=True)
     contact_phone = models.CharField(max_length=64, blank=True, null=True)
     contact_email = models.CharField(max_length=64, blank=True, null=True)
     contact_fax = models.CharField(max_length=64, blank=True, null=True)
     created = models.DateTimeField(blank=True, null=True, auto_now_add=True)
-    updated = models.DateTimeField(blank=True, null=True)
+    updated = models.DateTimeField(blank=True, null=True, auto_now=True)
     cancelled = models.BooleanField(blank=True, null=True, default=False)
     link = models.CharField(max_length=512, blank=True, null=True)
     acronym = models.CharField(max_length=4, blank=True, null=True)
@@ -295,11 +297,11 @@ class Tender(models.Model):
         ll = self.lots
         e, b = 0, 0
         r, v = False, False
-        if len(ll) > 0:
-            l1 = ll[0]
+        if ll.count() > 0:
+            l1 = ll.first()
             r = l1.reserved
             v = l1.variant
-            for l in ll:
+            for l in ll.all():
                 e += l.estimate
                 b += l.bond
         self.estimate = e
@@ -312,8 +314,8 @@ class Tender(models.Model):
 
 class Kind(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    short = models.CharField(max_length=32, blank=True, null=True)
-    name = models.CharField(max_length=512, blank=True, null=True)
+    short = models.CharField(max_length=128, blank=True, null=True)
+    name = models.CharField(max_length=1024, blank=True, null=True)
 
     class Meta:
         db_table = 'kind'
@@ -331,7 +333,7 @@ class Utilizer(models.Model):
 class Visit(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     when = models.DateTimeField(blank=True, null=True)
-    description = models.CharField(max_length=512, blank=True, null=True)
+    description = models.CharField(max_length=2048, blank=True, null=True)
     lot = models.ForeignKey('Lot', on_delete=models.DO_NOTHING, related_name="visits", db_column='lot', blank=True, null=True)
 
     class Meta:

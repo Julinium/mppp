@@ -1,3 +1,0 @@
-import linker
-
-linker.getLinks()

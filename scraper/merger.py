@@ -2,15 +2,26 @@ import traceback
 from rest_framework import serializers
 from django.db import transaction
 
+import os
+import django
+from django.conf import settings
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "scraper.settings")
+django.setup()
+
+from . import helper
+
 
 from .models import (
-    Tender, Lot, Meeting, Domain, Category, Client, Kind, Agrement, 
-    Qualif, RelDomainTender, RelAgrementLot, RelQualifLot
+    Tender, Lot, Agrement, Qualif, Kind, Domain, Mode, Procedure, 
+    Category, Change, Client, Meeting, Sample, Visit,
+    RelAgrementLot, RelDomainTender, RelQualifLot
 )
 
 from .serializers import (
-    TenderSerializer, LotSerializer, MeetingSerializer, DomainSerializer, 
-    CategorySerializer, ClientSerializer, KindSerializer, AgrementSerializer, 
+    TenderSerializer, LotSerializer, MeetingSerializer, SampleSerializer, VisitSerializer, 
+    ModeSerializer, ProcedureSerializer, DomainSerializer, 
+    CategorySerializer, ChangeSerializer, ClientSerializer, KindSerializer, AgrementSerializer, 
     QualifSerializer, RelDomainTenderSerializer, RelAgrementLotSerializer, 
     RelQualifLotSerializer
 )
@@ -18,6 +29,8 @@ from .serializers import (
 
 
 def json2Data(tender_json):
+
+    helper.printMessage('DEBUG', 'merger.json2Data', "### Started formatting tender data ...", 1, 0)
     j = tender_json
     try:
         j["published"] = helper.getDateTime(j["published"])
@@ -64,6 +77,7 @@ def json2Data(tender_json):
                     v["when"] = helper.getDateTime(v["when"])
                 l["visits"] = vv
         j["lots"] = ll
+        helper.printMessage('DEBUG', 'merger.json2Data', "+++ Done formatting tender data")
 
     except:
         traceback.print_exc()
@@ -72,7 +86,7 @@ def json2Data(tender_json):
 
 
 @transaction.atomic
-def mergeTender(tender_data):
+def saveTender(tender_data):
     """
     # Merge a nested JSON object into a Tender instance and its related objects in the database.
     # Assumes no 'id' fields in the JSON. Deletes related objects (Lots, Meetings, etc.) that are
@@ -89,29 +103,43 @@ def mergeTender(tender_data):
     """
 
     formatted_data = json2Data(tender_data)
-    # Step 1: Validate the JSON using TenderSerializer
+    helper.printMessage('DEBUG', 'merger.saveTender', "### Started saving formatted date", 1, 0)
+    # print(formatted_data)
+
+    # Step x: Validate the JSON using TenderSerializer
     tender_serializer = TenderSerializer(data=formatted_data)
     tender_serializer.is_valid(raise_exception=True)
     validated_data = tender_serializer.validated_data
 
-    # Step 2: Handle foreign key relationships (category, client, kind, mode, procedure)
-    category_data = validated_data.pop('category', None)
-    client_data = validated_data.pop('client', None)
-    kind_data = validated_data.pop('kind', None)
-    mode_data = validated_data.pop('mode', None)
-    procedure_data = validated_data.pop('procedure', None)
+    # Step x: Handle foreign key relationships (category, client, kind, mode, procedure)
+    # category_data = validated_data.pop('category', None)
+    # client_data = validated_data.pop('client', None)
+    # kind_data = validated_data.pop('kind', None)
+    # mode_data = validated_data.pop('mode', None)
+    # procedure_data = validated_data.pop('procedure', None)
+    category_data = formatted_data['category']
+    client_data = formatted_data['client']
+    kind_data = formatted_data['kind']
+    mode_data = formatted_data['mode']
+    procedure_data = formatted_data['procedure']
 
     ## Handle Category
     category = None
+    helper.printMessage('TRACE', 'merger.saveTender', "### Handling Category ... ")
     if category_data:
+        helper.printMessage('TRACE', 'merger.saveTender', "+++ Got Category data. Analyzing ... ")
         label = category_data.get('label')
         if label and Category.objects.filter(label=label).exists():
             category = Category.objects.get(label=label)
             category_serializer = CategorySerializer(category, data=category_data, partial=True)
+            helper.printMessage('DEBUG', 'merger.saveTender', "+++ Category already exists. Updating.")
         else:
             category_serializer = CategorySerializer(data=category_data)
+            helper.printMessage('DEBUG', 'merger.saveTender', f"+++ Category to be created: {label}")
         category_serializer.is_valid(raise_exception=True)
         category = category_serializer.save()
+    else:
+        helper.printMessage('WARN', 'merger.saveTender', "--- Could not pop out Category data!", 1, 2)
 
     ## Handle Client
     client = None
@@ -120,8 +148,10 @@ def mergeTender(tender_data):
         if name and Client.objects.filter(name=name).exists():
             client = Client.objects.get(name=name)
             client_serializer = ClientSerializer(client, data=client_data, partial=True)
+            helper.printMessage('DEBUG', 'merger.saveTender', "+++ Client already exists. Updating.")
         else:
             client_serializer = ClientSerializer(data=client_data)
+            helper.printMessage('DEBUG', 'merger.saveTender', f"+++ Client to be created: {name}")
         client_serializer.is_valid(raise_exception=True)
         client = client_serializer.save()
 
@@ -132,8 +162,10 @@ def mergeTender(tender_data):
         if name and Kind.objects.filter(name=name).exists():
             kind = Kind.objects.get(name=name)
             kind_serializer = KindSerializer(kind, data=kind_data, partial=True)
+            helper.printMessage('DEBUG', 'merger.saveTender', "+++ Procedure Type already exists. Updating.")
         else:
             kind_serializer = KindSerializer(data=kind_data)
+            helper.printMessage('DEBUG', 'merger.saveTender', f"+++ Procedure Type to be created: {name}")
         kind_serializer.is_valid(raise_exception=True)
         kind = kind_serializer.save()
 
@@ -144,8 +176,10 @@ def mergeTender(tender_data):
         if name and Mode.objects.filter(name=name).exists():
             mode = Mode.objects.get(name=name)
             mode_serializer = ModeSerializer(mode, data=mode_data, partial=True)
+            helper.printMessage('DEBUG', 'merger.saveTender', "+++ Awarding Mode already exists. Updating.")
         else:
             mode_serializer = ModeSerializer(data=mode_data)
+            helper.printMessage('DEBUG', 'merger.saveTender', f"+++ Awarding Mode to be created: {name}")
         mode_serializer.is_valid(raise_exception=True)
         mode = mode_serializer.save()
 
@@ -156,14 +190,31 @@ def mergeTender(tender_data):
         if name and Procedure.objects.filter(name=name).exists():
             procedure = Procedure.objects.get(name=name)
             procedure_serializer = ProcedureSerializer(procedure, data=procedure_data, partial=True)
+            helper.printMessage('DEBUG', 'merger.saveTender', "+++ Procedure already exists. Updating.")
         else:
             procedure_serializer = ProcedureSerializer(data=procedure_data)
+            helper.printMessage('DEBUG', 'merger.saveTender', f"+++ Procedure to be created: {name}")
         procedure_serializer.is_valid(raise_exception=True)
         procedure = procedure_serializer.save()
+
+
+    # Step x: Create or update Tender
+    chrono = validated_data.get('chrono')
+    tender = None
+    if chrono and Tender.objects.filter(chrono=chrono).exists():
+        tender = Tender.objects.get(chrono=chrono)
+        tender_serializer = TenderSerializer(tender, data=validated_data, partial=True)
+        helper.printMessage('DEBUG', 'merger.saveTender', "+++ Tender already exists. Updating.")
+    else:
+        tender_serializer = TenderSerializer(data=validated_data)
+        helper.printMessage('DEBUG', 'merger.saveTender', f"+++ Tender to be created: {chrono}")
+    tender_serializer.is_valid(raise_exception=True)
+    tender = tender_serializer.save(category=category, client=client, kind=kind, mode=mode, procedure=procedure)
     
 
-    # Step 3: Handle Domains (many-to-many)
-    domains_data = validated_data.pop('domains', [])
+    # Step x: Handle Domains (many-to-many)
+    # domains_data = validated_data.pop('domains', [])
+    domains_data = formatted_data['domains']
     json_domain_keys = set()
     for domain_data in domains_data:
         name = domain_data.get('name')
@@ -171,43 +222,36 @@ def mergeTender(tender_data):
         if name and Domain.objects.filter(name=name).exists():
             domain = Domain.objects.get(name=name)
             domain_serializer = DomainSerializer(domain, data=domain_data, partial=True)
+            helper.printMessage('DEBUG', 'merger.saveTender', "+++ Domain of Activiry already exists. Updating.")
         else:
             domain_serializer = DomainSerializer(data=domain_data)
+            helper.printMessage('DEBUG', 'merger.saveTender', f"+++ Domain of Activiry to be created: {name}")
         domain_serializer.is_valid(raise_exception=True)
         domain = domain_serializer.save()
         json_domain_keys.add((domain.name))
         RelDomainTender.objects.get_or_create(domain=domain, tender=tender)
 
+
     # Remove domains not in JSON
     existing_domains = set(tender.domains.values_list('name'))
     domains_to_remove = existing_domains - json_domain_keys
-    for short, name in domains_to_remove:
+    for name in domains_to_remove:
         domain = Domain.objects.filter(name=name).first()
         if domain:
             RelDomainTender.objects.filter(domain=domain, tender=tender).delete()
 
 
-    # Step 4: Create or update Tender
-    chrono = validated_data.get('chrono')
-    tender = None
-    if chrono and Tender.objects.filter(chrono=chrono).exists():
-        tender = Tender.objects.get(chrono=chrono)
-        tender_serializer = TenderSerializer(tender, data=validated_data, partial=True)
-    else:
-        tender_serializer = TenderSerializer(data=validated_data)
-    tender_serializer.is_valid(raise_exception=True)
-    tender = tender_serializer.save(category=category, client=client, kind=kind)
 
-
-
-    # Step 5: Handle Lots
-    lots_data = validated_data.pop('lots', [])
+    # Step x: Handle Lots
+    # lots_data = validated_data.pop('lots', [])
+    lots_data = formatted_data["lots"]
     json_lot_keys = set()
     new_lots = []
 
     for lot_data in lots_data:
         # Handle nested Category for Lot
-        lot_category_data = lot_data.pop('category', None)
+        # lot_category_data = lot_data.pop('category', None)
+        lot_category_data = lot_data["category"]
         lot_category = None
         if lot_category_data:
             label = lot_category_data.get('label')
@@ -220,9 +264,13 @@ def mergeTender(tender_data):
             lot_category = lot_category_serializer.save()
 
         # Handle nested Meetings, Agrements, Qualifs
-        meetings_data = lot_data.pop('meetings', [])
-        agrements_data = lot_data.pop('agrements', [])
-        qualifs_data = lot_data.pop('qualifs', [])
+        # meetings_data = lot_data.pop('meetings', [])
+        # agrements_data = lot_data.pop('agrements', [])
+        # qualifs_data = lot_data.pop('qualifs', [])
+        meetings_data = lot_data['meetings']
+        agrements_data = lot_data['agrements']
+        qualifs_data = lot_data['qualifs']
+
         lot_data['category'] = lot_category
 
         # Match Lot by title or number

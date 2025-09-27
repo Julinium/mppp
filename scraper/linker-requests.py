@@ -8,8 +8,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 
-import constants as C
-import helper
+from . import constants as C
+from . import helper
 
 
 def fillSearchForm(driver, back_days=C.PORTAL_DDL_PAST_DAYS):

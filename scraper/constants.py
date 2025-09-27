@@ -54,7 +54,7 @@ if args.dce: SKIP_DCE = args.dce.lower() != "download"
 
 
 # Use Chromium without GUI. Set to True if running on a non-GUI system
-HEADLESS_MODE = False #True
+HEADLESS_MODE = True #False
 
 # Target website. Held for privacy
 SITE_ROOT = os.getenv("SITE_ROOT")
