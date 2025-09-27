@@ -241,16 +241,27 @@ def saveTender(tender_data):
             RelDomainTender.objects.filter(domain=domain, tender=tender).delete()
 
 
-
     # Step x: Handle Lots
     # lots_data = validated_data.pop('lots', [])
     lots_data = formatted_data["lots"]
     json_lot_keys = set()
     new_lots = []
 
+
+    # ll = self.lots
+    estimate_total, bond_total = 0, 0
+    reserved_tender, variant_tender = False, False
+    if len(lots_data) > 0:
+        l1 = lots_data[0]
+        reserved_tender = l1["reserved"]
+        variant_tender = l1["variant"]
+
     for lot_data in lots_data:
+        # Update Tender fields
+        estimate_total += l.estimate
+        bond_total += l.bond
+
         # Handle nested Category for Lot
-        # lot_category_data = lot_data.pop('category', None)
         lot_category_data = lot_data["category"]
         lot_category = None
         if lot_category_data:
@@ -263,10 +274,6 @@ def saveTender(tender_data):
             lot_category_serializer.is_valid(raise_exception=True)
             lot_category = lot_category_serializer.save()
 
-        # Handle nested Meetings, Agrements, Qualifs
-        # meetings_data = lot_data.pop('meetings', [])
-        # agrements_data = lot_data.pop('agrements', [])
-        # qualifs_data = lot_data.pop('qualifs', [])
         meetings_data = lot_data['meetings']
         agrements_data = lot_data['agrements']
         qualifs_data = lot_data['qualifs']
@@ -275,7 +282,6 @@ def saveTender(tender_data):
 
         # Match Lot by title or number
         lot_title = lot_data.get('title')
-        # lot_number = lot_data.get('number')
         lot = None
         if lot_title and Lot.objects.filter(title=lot_title, tender=tender).exists():
             lot = Lot.objects.get(title=lot_title, tender=tender)
@@ -311,7 +317,6 @@ def saveTender(tender_data):
         # Handle Agrements (many-to-many)
         json_agrement_keys = set()
         for agrement_data in agrements_data:
-            # short = agrement_data.get('short')
             name = agrement_data.get('name')
             agrement = None
             if name and Agrement.objects.filter(name=name).exists():
@@ -357,6 +362,13 @@ def saveTender(tender_data):
                 RelQualifLot.objects.filter(qualif=qualif, lot=lot).delete()
 
         new_lots.append(lot)
+    
+    # Update totals for Tender
+    tender.estimate = estimate_total
+    tender.bond = bond_total
+    tender.reserved = reserved_tender
+    tender.variant = variant_tender
+    tender.save()
 
     # Remove Lots not in JSON
     existing_lots = set(tender.lots.values_list('title', 'number'))

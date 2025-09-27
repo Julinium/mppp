@@ -291,25 +291,25 @@ class Tender(models.Model):
         db_table = 'tender'
     
     def __str__():
-        return self.title
+        return f"[{self.chrono}][{self.reference}] {self.title}"
 
-    def save(self, *args, **kwargs):
-        ll = self.lots
-        e, b = 0, 0
-        r, v = False, False
-        if ll.count() > 0:
-            l1 = ll.first()
-            r = l1.reserved
-            v = l1.variant
-            for l in ll.all():
-                e += l.estimate
-                b += l.bond
-        self.estimate = e
-        self.bond = b
-        self.reserved = r
-        self.variant = v
+    # def save(self, *args, **kwargs):
+    #     ll = self.lots
+    #     e, b = 0, 0
+    #     r, v = False, False
+    #     if ll.count() > 0:
+    #         l1 = ll.first()
+    #         r = l1.reserved
+    #         v = l1.variant
+    #         for l in ll.all():
+    #             e += l.estimate
+    #             b += l.bond
+    #     self.estimate = e
+    #     self.bond = b
+    #     self.reserved = r
+    #     self.variant = v
 
-        return super().save(*args, **kwargs)
+    #     return super().save(*args, **kwargs)
 
 
 class Kind(models.Model):
