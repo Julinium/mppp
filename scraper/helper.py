@@ -129,9 +129,9 @@ def getDateTime(datetime_str):
         rabat_dt = rabat_tz.localize(naive_dt)
         return rabat_dt
     if len(datetime_str) == 10:
-        naive_dt = datetime.strptime(datetime_str, '%d/%m/%Y')
-        rabat_dt = rabat_tz.localize(naive_dt)
-        return rabat_dt
+        naive_dt = datetime.strptime(datetime_str, '%d/%m/%Y').date()
+        # rabat_dt = rabat_tz.localize(naive_dt)
+        return naive_dt
     return None
 
 

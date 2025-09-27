@@ -248,15 +248,19 @@ def saveTender(tender_data):
     new_lots = []
 
 
-    # ll = self.lots
     estimate_total, bond_total = 0, 0
     reserved_tender, variant_tender = False, False
-    if len(lots_data) > 0:
+    ll = len(lots_data)
+    if ll > 0:
+        helper.printMessage('TRACE', 'merger.saveTender', f"#### Got data for {ll} Lots. ")
+        i = 0
         l1 = lots_data[0]
         reserved_tender = l1["reserved"]
         variant_tender = l1["variant"]
 
     for lot_data in lots_data:
+        i += 1
+        helper.printMessage('DEBUG', 'merger.saveTender', f"#### Handling Lot {i}/{ll} ... ")
         # Update Tender fields
         estimate_total += lot_data["estimate"]
         bond_total += lot_data["bond"]
@@ -264,15 +268,18 @@ def saveTender(tender_data):
         # Handle nested Category for Lot
         lot_category_data = lot_data["category"]
         lot_category = None
+        helper.printMessage('DEBUG', 'merger.saveTender', f"#### Handling Lot Categories {i}/{ll} ... ")
         if lot_category_data:
             label = lot_category_data.get('label')
             if label and Category.objects.filter(label=label).exists():
+                helper.printMessage('TRACE', 'merger.saveTender', "#### Lot Category exists. Skipping.")
                 lot_category = Category.objects.get(label=label)
                 lot_category_serializer = CategorySerializer(lot_category, data=lot_category_data, partial=True)
             else:
                 lot_category_serializer = CategorySerializer(data=lot_category_data)
-            lot_category_serializer.is_valid(raise_exception=True)
-            lot_category = lot_category_serializer.save()
+                helper.printMessage('TRACE', 'merger.saveTender', f"#### Lot Category to be created: {label}")
+                lot_category_serializer.is_valid(raise_exception=True)
+                lot_category = lot_category_serializer.save()
 
         meetings_data = lot_data['meetings']
         agrements_data = lot_data['agrements']
@@ -280,35 +287,42 @@ def saveTender(tender_data):
 
         lot_data['category'] = lot_category
 
-        # Match Lot by title or number
+        # Match Lot by title
         lot_title = lot_data.get('title')
         lot = None
+        helper.printMessage('TRACE', 'merger.saveTender', "#### Handling Lot ... ")
         if lot_title and Lot.objects.filter(title=lot_title, tender=tender).exists():
+            helper.printMessage('TRACE', 'merger.saveTender', "#### Lot exists. Skipping.")
             lot = Lot.objects.get(title=lot_title, tender=tender)
             lot_serializer = LotSerializer(lot, data=lot_data, partial=True)
         else:
             lot_serializer = LotSerializer(data=lot_data)
-        lot_serializer.is_valid(raise_exception=True)
-        lot = lot_serializer.save(tender=tender)
+            helper.printMessage('TRACE', 'merger.saveTender', f"#### Lot to be created: {lot_title}")
+            lot_serializer.is_valid(raise_exception=True)
+            lot = lot_serializer.save(tender=tender)
 
         json_lot_keys.add((lot.title, lot.number))
 
         # Handle Meetings
         json_meeting_keys = set()
+        helper.printMessage('TRACE', 'merger.saveTender', "#### Handling Lot Meetings ... ")
         for meeting_data in meetings_data:
             when = meeting_data.get('when')
             description = meeting_data.get('description')
             json_meeting_keys.add((when, description))
             meeting = None
             if when and Meeting.objects.filter(when=when, lot=lot).exists():
+                helper.printMessage('TRACE', 'merger.saveTender', "#### Meeting exists. Skipping.")
                 meeting = Meeting.objects.get(when=when, lot=lot)
                 meeting_serializer = MeetingSerializer(meeting, data=meeting_data, partial=True)
             else:
                 meeting_serializer = MeetingSerializer(data=meeting_data)
-            meeting_serializer.is_valid(raise_exception=True)
-            meeting_serializer.save(lot=lot)
+                helper.printMessage('TRACE', 'merger.saveTender', f"#### Meeting to be created: {when}")
+                meeting_serializer.is_valid(raise_exception=True)
+                meeting_serializer.save(lot=lot)
 
         # Remove Meetings not in JSON
+        helper.printMessage('TRACE', 'merger.saveTender', "### Handling Meetings relationships ... ")
         existing_meetings = set(lot.meetings.values_list('when', 'description'))
         meetings_to_remove = existing_meetings - json_meeting_keys
         for when, description in meetings_to_remove:
@@ -316,20 +330,24 @@ def saveTender(tender_data):
 
         # Handle Agrements (many-to-many)
         json_agrement_keys = set()
+        helper.printMessage('TRACE', 'merger.saveTender', "#### Handling Lot Agrements ... ")
         for agrement_data in agrements_data:
             name = agrement_data.get('name')
             agrement = None
             if name and Agrement.objects.filter(name=name).exists():
+                helper.printMessage('TRACE', 'merger.saveTender', "#### Agrement exists. Skipping.")
                 agrement = Agrement.objects.get(name=name)
                 agrement_serializer = AgrementSerializer(agrement, data=agrement_data, partial=True)
             else:
                 agrement_serializer = AgrementSerializer(data=agrement_data)
-            agrement_serializer.is_valid(raise_exception=True)
-            agrement = agrement_serializer.save()
+                helper.printMessage('TRACE', 'merger.saveTender', f"#### Agrement to be created: {name}")
+                agrement_serializer.is_valid(raise_exception=True)
+                agrement = agrement_serializer.save()
             json_agrement_keys.add((agrement.short, agrement.name))
             RelAgrementLot.objects.get_or_create(agrement=agrement, lot=lot)
 
         # Remove Agrements not in JSON
+        helper.printMessage('TRACE', 'merger.saveTender', "### Handling Agrements relationships ... ")
         existing_agrements = set(lot.agrements.values_list('short', 'name'))
         agrements_to_remove = existing_agrements - json_agrement_keys
         for short, name in agrements_to_remove:
@@ -339,21 +357,25 @@ def saveTender(tender_data):
 
         # Handle Qualifs (many-to-many)
         json_qualif_keys = set()
+        helper.printMessage('TRACE', 'merger.saveTender', "#### Handling Lot Qualifs ... ")
         for qualif_data in qualifs_data:
             short = qualif_data.get('short')
             name = qualif_data.get('name')
             qualif = None
             if name and Qualif.objects.filter(name=name).exists():
+                helper.printMessage('TRACE', 'merger.saveTender', "#### Qualif exists. Skipping.")
                 qualif = Qualif.objects.get(name=name)
                 qualif_serializer = QualifSerializer(qualif, data=qualif_data, partial=True)
             else:
                 qualif_serializer = QualifSerializer(data=qualif_data)
-            qualif_serializer.is_valid(raise_exception=True)
-            qualif = qualif_serializer.save()
+                helper.printMessage('TRACE', 'merger.saveTender', f"#### Qualif to be created: {name}")
+                qualif_serializer.is_valid(raise_exception=True)
+                qualif = qualif_serializer.save()
             json_qualif_keys.add((qualif.short, qualif.name))
             RelQualifLot.objects.get_or_create(qualif=qualif, lot=lot)
 
         # Remove Qualifs not in JSON
+        helper.printMessage('TRACE', 'merger.saveTender', "### Handling Qualifs relationships ... ")
         existing_qualifs = set(lot.qualifs.values_list('short', 'name'))
         qualifs_to_remove = existing_qualifs - json_qualif_keys
         for short, name in qualifs_to_remove:
@@ -365,13 +387,8 @@ def saveTender(tender_data):
     
     # Update totals for Tender
     helper.printMessage('DEBUG', 'merger.saveTender', "### Updating Tender details from Lots ... ")
-    # tender.estimate = estimate_total
-    # tender.bond = bond_total
-    # tender.reserved = reserved_tender
-    # tender.variant = variant_tender
     tender = tender_serializer.save(estimate=estimate_total, bond = bond_total, reserved = reserved_tender, variant = variant_tender)
-    # tender.save()
-
+    
     # Remove Lots not in JSON
     helper.printMessage('TRACE', 'merger.saveTender', "### Handling Lots relationships ... ")
     existing_lots = set(tender.lots.values_list('title', 'number'))

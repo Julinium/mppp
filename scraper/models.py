@@ -33,7 +33,7 @@ class Category(models.Model):
 
 class Change(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    tender = models.ForeignKey('Tender', on_delete=models.DO_NOTHING, related_name="changes", db_column='tender', blank=True, null=True)    
+    tender = models.ForeignKey('Tender', on_delete=models.CASCADE, related_name="changes", db_column='tender', blank=True, null=True)    
     reported = models.DateTimeField(blank=True, null=True, auto_now_add=True)
     # field = models.CharField(max_length=128, blank=True, null=True)
     # old_val = models.CharField(max_length=256, blank=True, null=True)
@@ -126,7 +126,7 @@ class Favo(models.Model):
     ua = models.CharField(max_length=256, blank=True, null=True)
     ip = models.CharField(max_length=48, blank=True, null=True)
     utilizer = models.ForeignKey('Utilizer', on_delete=models.DO_NOTHING, related_name="favos", db_column='utilizer', blank=True, null=True)
-    tender = models.ForeignKey('Tender', on_delete=models.DO_NOTHING, related_name="favos", db_column='tender', blank=True, null=True)
+    tender = models.ForeignKey('Tender', on_delete=models.CASCADE, related_name="favos", db_column='tender', blank=True, null=True)
 
     class Meta:
         db_table = 'favo'
@@ -145,7 +145,7 @@ class Lot(models.Model):
     variant = models.BooleanField(blank=True, null=True)
     category = models.ForeignKey('Category', on_delete=models.DO_NOTHING, related_name="lots", db_column='category', blank=True, null=True)
     
-    tender = models.ForeignKey('Tender', on_delete=models.DO_NOTHING, related_name="lots", db_column='tender', blank=True, null=True)
+    tender = models.ForeignKey('Tender', on_delete=models.CASCADE, related_name="lots", db_column='tender', blank=True, null=True)
     agrements = models.ManyToManyField('Agrement', through='RelAgrementLot', related_name='lots')
     qualifs = models.ManyToManyField('Qualif', through='RelQualifLot', related_name='lots')
 
@@ -220,7 +220,7 @@ class RelAgrementLot(models.Model):
 class RelDomainTender(models.Model):
     pk = models.CompositePrimaryKey('domain', 'tender')
     domain = models.ForeignKey('Domain', on_delete=models.DO_NOTHING, db_column='domain')
-    tender = models.ForeignKey('Tender', on_delete=models.DO_NOTHING, db_column='tender')
+    tender = models.ForeignKey('Tender', on_delete=models.CASCADE, db_column='tender')
 
     class Meta:
         db_table = 'rel_domain_tender'
@@ -252,7 +252,7 @@ class Tender(models.Model):
     chrono = models.CharField(max_length=16, blank=True, null=True)
     title = models.CharField(max_length=4096, blank=True, null=True)
     reference = models.CharField(max_length=128, blank=True, null=True)
-    published = models.DateTimeField(blank=True, null=True)
+    published = models.DateField(blank=True, null=True)
     deadline = models.DateTimeField(blank=True, null=True)
 
     lots_count = models.SmallIntegerField(blank=True, null=True, default=0)
