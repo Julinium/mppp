@@ -365,11 +365,12 @@ def saveTender(tender_data):
     
     # Update totals for Tender
     helper.printMessage('DEBUG', 'merger.saveTender', "### Updating Tender details from Lots ... ")
-    tender.estimate = estimate_total
-    tender.bond = bond_total
-    tender.reserved = reserved_tender
-    tender.variant = variant_tender
-    tender.save()
+    # tender.estimate = estimate_total
+    # tender.bond = bond_total
+    # tender.reserved = reserved_tender
+    # tender.variant = variant_tender
+    tender = tender_serializer.save(estimate=estimate_total, bond = bond_total, reserved = reserved_tender, variant = variant_tender)
+    # tender.save()
 
     # Remove Lots not in JSON
     helper.printMessage('TRACE', 'merger.saveTender', "### Handling Lots relationships ... ")
