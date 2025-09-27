@@ -238,6 +238,7 @@ def saveTender(tender_data):
     for name in domains_to_remove:
         domain = Domain.objects.filter(name=name).first()
         if domain:
+            helper.printMessage('DEBUG', 'merger.saveTender', f"#### Unlinking Tender {tender.chrono} and Domain {domain.name} ... ")
             RelDomainTender.objects.filter(domain=domain, tender=tender).delete()
 
 
