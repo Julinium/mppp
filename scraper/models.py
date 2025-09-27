@@ -34,7 +34,7 @@ class Category(models.Model):
 class Change(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     tender = models.ForeignKey('Tender', on_delete=models.DO_NOTHING, related_name="changes", db_column='tender', blank=True, null=True)    
-    reported = models.DateTimeField(blank=True, null=True, auto_now_add)
+    reported = models.DateTimeField(blank=True, null=True, auto_now_add=True)
     # field = models.CharField(max_length=128, blank=True, null=True)
     # old_val = models.CharField(max_length=256, blank=True, null=True)
     # new_val = models.CharField(max_length=256, blank=True, null=True)
