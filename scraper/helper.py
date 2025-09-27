@@ -122,7 +122,7 @@ def getDateTime(datetime_str):
 
 
     rabat_tz = pytz.timezone("Africa/Casablanca")
-    rabat_dt = rabat_tz.localize(naive_dt)
+    # rabat_dt = rabat_tz.localize(naive_dt)
 
     if len(datetime_str) == 16:
         naive_dt = datetime.strptime(datetime_str, '%d/%m/%Y %H:%M')

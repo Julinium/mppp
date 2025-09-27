@@ -29,7 +29,7 @@ if ll > 0:
     file_path = "exports/cons.json"
     i = 0
 
-    for l in links:
+    for l in links[::-1]:
         i += 1
         helper.printMessage('DEBUG', 'worker', f"Getting Data for link {i:03}/{ll:03}", 2, 1)
         jsono = getter.getJson(l, not REFRESH_EXISTING)

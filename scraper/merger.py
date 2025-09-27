@@ -119,9 +119,9 @@ def saveTender(tender_data):
 
     ## Handle Category
     category = None
-    # helper.printMessage('TRACE', 'merger.saveTender', "### Handling Category ... ")
+    helper.printMessage('TRACE', 'merger.saveTender', "### Handling Category ... ")
     if category_data:
-        # helper.printMessage('TRACE', 'merger.saveTender', "+++ Got Category data. Analyzing ... ")
+        helper.printMessage('TRACE', 'merger.saveTender', "+++ Got Category data. Analyzing ... ")
         label = category_data.get('label')
         if label and Category.objects.filter(label=label).exists():
             category = Category.objects.get(label=label)
@@ -137,6 +137,7 @@ def saveTender(tender_data):
 
     ## Handle Client
     client = None
+    helper.printMessage('TRACE', 'merger.saveTender', "### Handling Client ... ")
     if client_data:
         name = client_data.get('name')
         if name and Client.objects.filter(name=name).exists():
@@ -151,6 +152,7 @@ def saveTender(tender_data):
 
     ## Handle Kind
     kind = None
+    helper.printMessage('TRACE', 'merger.saveTender', "### Handling Type ... ")
     if kind_data:
         name = kind_data.get('name')
         if name and Kind.objects.filter(name=name).exists():
@@ -165,6 +167,7 @@ def saveTender(tender_data):
 
     ## Handle Mode
     mode = None
+    helper.printMessage('TRACE', 'merger.saveTender', "### Handling Mode ... ")
     if mode_data:
         name = mode_data.get('name')
         if name and Mode.objects.filter(name=name).exists():
@@ -179,6 +182,7 @@ def saveTender(tender_data):
 
     ## Handle Procedure
     procedure = None
+    helper.printMessage('TRACE', 'merger.saveTender', "### Handling Procedure ... ")
     if procedure_data:
         name = procedure_data.get('name')
         if name and Procedure.objects.filter(name=name).exists():
@@ -195,6 +199,7 @@ def saveTender(tender_data):
     # Step x: Create or update Tender
     chrono = validated_data.get('chrono')
     tender = None
+    helper.printMessage('TRACE', 'merger.saveTender', "### Handling Tender ... ")
     if chrono and Tender.objects.filter(chrono=chrono).exists():
         tender = Tender.objects.get(chrono=chrono)
         tender_serializer = TenderSerializer(tender, data=validated_data, partial=True)
@@ -207,7 +212,7 @@ def saveTender(tender_data):
     
 
     # Step x: Handle Domains (many-to-many)
-    # domains_data = validated_data.pop('domains', [])
+    helper.printMessage('TRACE', 'merger.saveTender', "### Handling Domains ... ")
     domains_data = formatted_data['domains']
     json_domain_keys = set()
     for domain_data in domains_data:
@@ -227,6 +232,7 @@ def saveTender(tender_data):
 
 
     # Remove domains not in JSON
+    helper.printMessage('TRACE', 'merger.saveTender', "### Handling Domains relationships ... ")
     existing_domains = set(tender.domains.values_list('name'))
     domains_to_remove = existing_domains - json_domain_keys
     for name in domains_to_remove:
@@ -236,7 +242,7 @@ def saveTender(tender_data):
 
 
     # Step x: Handle Lots
-    # lots_data = validated_data.pop('lots', [])
+    helper.printMessage('TRACE', 'merger.saveTender', "### Handling Lots ... ")
     lots_data = formatted_data["lots"]
     json_lot_keys = set()
     new_lots = []
@@ -358,6 +364,7 @@ def saveTender(tender_data):
         new_lots.append(lot)
     
     # Update totals for Tender
+    helper.printMessage('DEBUG', 'merger.saveTender', "### Updating Tender details from Lots ... ")
     tender.estimate = estimate_total
     tender.bond = bond_total
     tender.reserved = reserved_tender
@@ -365,6 +372,7 @@ def saveTender(tender_data):
     tender.save()
 
     # Remove Lots not in JSON
+    helper.printMessage('TRACE', 'merger.saveTender', "### Handling Lots relationships ... ")
     existing_lots = set(tender.lots.values_list('title', 'number'))
     lots_to_remove = existing_lots - json_lot_keys
     for title, number in lots_to_remove:
