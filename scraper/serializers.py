@@ -19,7 +19,7 @@ class CategorySerializer(serializers.ModelSerializer):
 class ChangeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Change
-        fields = ['id', 'tender', 'reported', 'field', 'old_val', 'new_val', 'description']
+        fields = ['id', 'tender', 'reported', 'changes']
 
 
 class ClientSerializer(serializers.ModelSerializer):
@@ -162,9 +162,10 @@ class TenderSerializer(serializers.ModelSerializer):
 
         # Log changes if any
         if changes:
-            log_message = f"Tender {instance.id} updated. Changes: {changes}"
+            change = Change(tender=instance, changes=changes)
+            change.save()
+            log_message = f"Tender {instance.chrono} updated. Changes saved."
             helper.printMessage('INFO', 'serializer.TenderSerializer', log_message, 2, 3)
-            
 
         return super().update(instance, validated_data)
 
