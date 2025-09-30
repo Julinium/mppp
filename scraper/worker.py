@@ -1,7 +1,17 @@
+import os, sys
+import django
+
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.append(project_root)
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mppp.settings')
+django.setup()
+
+
+
 import json
 
-from . import helper, linker, getter , merger
-from . import constants as C
+import helper, linker, getter , merger
+import constants as C
 
 
 # IMPORT_LINKS = C.IMPORT_LINKS

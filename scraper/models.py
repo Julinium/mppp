@@ -2,7 +2,7 @@
 import uuid
 from os import path as path
 from django.db import models
-from . import constants as C
+# import constants as C
 
 
 class Agrement(models.Model):
@@ -11,6 +11,7 @@ class Agrement(models.Model):
     name = models.CharField(max_length=2048, blank=True, null=True)
 
     class Meta:
+        app_label = 'scraper'
         db_table = 'agrement'
         ordering = ['name']
     
@@ -31,6 +32,7 @@ class Category(models.Model):
     label = models.CharField(max_length=128, blank=True, null=True)
 
     class Meta:
+        app_label = 'scraper'
         db_table = 'category'
         ordering = ['label']
     
@@ -45,6 +47,7 @@ class Change(models.Model):
     changes = models.CharField(max_length=4096, blank=True, null=True)
 
     class Meta:
+        app_label = 'scraper'
         db_table = 'change'
         ordering = ['-reported', 'tender']
     
@@ -59,6 +62,7 @@ class Client(models.Model):
     ministery = models.CharField(max_length=16, blank=True, null=True)
 
     class Meta:
+        app_label = 'scraper'
         db_table = 'client'
         ordering = ['ministery', 'name']
     
@@ -97,6 +101,7 @@ class Contact(models.Model):
     utilizer = models.ForeignKey('Utilizer', on_delete=models.DO_NOTHING, related_name="contacts", db_column='utilizer', blank=True, null=True)
 
     class Meta:
+        app_label = 'scraper'
         db_table = 'contact'
         ordering = ['-when']
     
@@ -110,6 +115,7 @@ class Domain(models.Model):
     name = models.CharField(max_length=2048, blank=True, null=True)
 
     class Meta:
+        app_label = 'scraper'
         db_table = 'domain'
         ordering = ['name']
     
@@ -135,6 +141,7 @@ class Download(models.Model):
     utilizer = models.ForeignKey('Utilizer', on_delete=models.DO_NOTHING, related_name="downloads", db_column='utilizer', blank=True, null=True)
 
     class Meta:
+        app_label = 'scraper'
         db_table = 'download'
         ordering = ['-when']
     
@@ -152,6 +159,7 @@ class Favo(models.Model):
     tender = models.ForeignKey('Tender', on_delete=models.CASCADE, related_name="favos", db_column='tender', blank=True, null=True)
 
     class Meta:
+        app_label = 'scraper'
         db_table = 'favo'
         ordering = ['-when']
     
@@ -176,6 +184,7 @@ class Lot(models.Model):
     qualifs = models.ManyToManyField('Qualif', through='RelQualifLot', related_name='lots')
 
     class Meta:
+        app_label = 'scraper'
         db_table = 'lot'
         ordering = ['number']
     
@@ -190,6 +199,7 @@ class Meeting(models.Model):
     lot = models.ForeignKey('Lot', on_delete=models.CASCADE, related_name="meetings", db_column='lot', blank=True, null=True)
 
     class Meta:
+        app_label = 'scraper'
         db_table = 'meeting'
         ordering = ['-when']
     
@@ -203,6 +213,7 @@ class Mode(models.Model):
     name = models.CharField(max_length=2048, blank=True, null=True)
 
     class Meta:
+        app_label = 'scraper'
         db_table = 'mode'
         ordering = ['name']
     
@@ -216,6 +227,7 @@ class Procedure(models.Model):
     name = models.CharField(max_length=2048, blank=True, null=True)
 
     class Meta:
+        app_label = 'scraper'
         db_table = 'procedure'
         ordering = ['name']
     
@@ -231,6 +243,7 @@ class Qualif(models.Model):
     classe = models.CharField(max_length=16, blank=True, null=True)
 
     class Meta:
+        app_label = 'scraper'
         db_table = 'qualif'
         ordering = ['name']
     
@@ -281,6 +294,7 @@ class RelAgrementLot(models.Model):
     lot = models.ForeignKey('Lot', on_delete=models.CASCADE, db_column='lot')
 
     class Meta:
+        app_label = 'scraper'
         db_table = 'rel_agrement_lot'
         unique_together = ('agrement', 'lot')
 
@@ -291,6 +305,7 @@ class RelDomainTender(models.Model):
     tender = models.ForeignKey('Tender', on_delete=models.CASCADE, db_column='tender')
 
     class Meta:
+        app_label = 'scraper'
         db_table = 'rel_domain_tender'
         unique_together = ('domain', 'tender')
 
@@ -301,6 +316,7 @@ class RelQualifLot(models.Model):
     lot = models.ForeignKey('Lot', on_delete=models.CASCADE, db_column='lot')
 
     class Meta:
+        app_label = 'scraper'
         db_table = 'rel_qualif_lot'
         unique_together = ('qualif', 'lot')
 
@@ -312,6 +328,7 @@ class Sample(models.Model):
     lot = models.ForeignKey('Lot', on_delete=models.CASCADE, related_name="samples", db_column='lot', blank=True, null=True)
 
     class Meta:
+        app_label = 'scraper'
         db_table = 'sample'
         ordering = ['-when']
     
@@ -361,11 +378,12 @@ class Tender(models.Model):
     domains = models.ManyToManyField('Domain', through='RelDomainTender', related_name='tenders')
 
     class Meta:
+        app_label = 'scraper'
         db_table = 'tender'
 
-    @property
-    def dce_folder_path(self):
-        return path.join(C.MEDIA_ROOT, f'dce/{C.DL_PATH_PREFIX}{self.chrono}')
+    # @property
+    # def dce_folder_path(self):
+    #     return path.join(C.MEDIA_ROOT, f'dce/{C.DL_PATH_PREFIX}{self.chrono}')
     
     def __str__(self):
         return f"{self.chrono} - {self.reference}: {self.title}"
@@ -377,6 +395,7 @@ class Kind(models.Model):
     name = models.CharField(max_length=1024, blank=True, null=True)
 
     class Meta:
+        app_label = 'scraper'
         db_table = 'kind'
         ordering = ['name']
     
@@ -390,6 +409,7 @@ class Utilizer(models.Model):
     email = models.CharField(blank=True, null=True)
 
     class Meta:
+        app_label = 'scraper'
         db_table = 'utilizer'
         ordering = ['username']
     
@@ -404,6 +424,7 @@ class Visit(models.Model):
     lot = models.ForeignKey('Lot', on_delete=models.CASCADE, related_name="visits", db_column='lot', blank=True, null=True)
 
     class Meta:
+        app_label = 'scraper'
         db_table = 'visit'
         ordering = ['-when']
     
@@ -413,12 +434,13 @@ class Visit(models.Model):
 
 class FileToDownload():
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    closed = models.BooleanField(blank=True, null=True, Default=False)
+    closed = models.BooleanField(blank=True, null=True, default=False)
     created = models.DateTimeField(blank=True, null=True, auto_now_add=True)
     updated = models.DateTimeField(blank=True, null=True, auto_now=True)
     reason = models.CharField(max_length=256, blank=True, null=True, default="Created")
     tender = models.ForeignKey('Tender', on_delete=models.CASCADE, related_name="file_to_downloads", db_column='tender', blank=True, null=True)
     
     class Meta:
+        app_label = 'scraper'
         db_table = 'file_to_download'
         ordering = ['-closed', 'created']

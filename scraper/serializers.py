@@ -1,9 +1,9 @@
 import uuid
 from rest_framework import serializers
 
-from . import helper
+import helper
 
-from .models import (
+from scraper.models import (
     Tender, Lot, Agrement, Qualif, Kind, Domain, Download, Mode, Procedure, 
     Category, Change, Client, Contact, Meeting, Sample, Visit, Favo,
     RelAgrementLot, RelDomainTender, RelQualifLot

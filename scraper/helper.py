@@ -6,7 +6,7 @@ from selenium import webdriver
 # from sqlalchemy import create_engine
 # from sqlalchemy.orm import sessionmaker
 
-from . import constants as C
+import constants as C
 # import helper
 
 

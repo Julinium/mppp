@@ -1,16 +1,24 @@
+import os, sys
+import django
 
-# import os
-# import django
-# from django.conf import settings
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.append(project_root)
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mppp.settings')
+django.setup()
 
-# os.environ.setdefault("DJANGO_SETTINGS_MODULE", "scraper.settings")
-# django.setup()
 
-# from .models import Qualif
+from scraper.models import Category, Tender
 
-# qualifs = Qualif.objects.all()
-# for q in qualifs:
-#     s = q.short
-#     q.save()
-#     print(f"{q.domain} - Classe {q.classe} <<< {s}")
+uts = Tender.objects.filter(category__label=None)
+i = 0
+n = len(uts)
+print(f"Found items: {n:05}\n")
 
+deleted_count, _ = uts.delete()
+print(f"Deleted {deleted_count} objects")
+
+# for t in uts:
+#     i += 1
+#     print(f"Deleting {t.chrono} --------{i}/{n}-------")
+#     t.delete()
+#     print(f"--------------- Deleted {t.chrono}")

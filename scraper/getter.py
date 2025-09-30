@@ -1,18 +1,18 @@
 import re, requests, traceback
 from bs4 import BeautifulSoup, Comment
 
-from . import helper
-from . import constants as C
+import helper
+import constants as C
 
-import os
-import django
-from django.conf import settings
+# import os
+# import django
+# from django.conf import settings
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "scraper.settings")
-django.setup()
+# os.environ.setdefault("DJANGO_SETTINGS_MODULE", "scraper.settings")
+# django.setup()
 
 
-from .models import Tender
+from scraper.models import Tender
 
 # NA_PLH = C.NA_PLH
 NA_PLH = None

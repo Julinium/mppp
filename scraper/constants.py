@@ -3,8 +3,8 @@ from dotenv import load_dotenv
 from pathlib import Path
 
 
-# Load the .env file from parent directory
-env_path = Path(__file__).resolve().parent.parent / '.env'
+SELENO_DIR = str(Path(__file__).resolve().parent)
+env_path = f'{ SELENO_DIR }/.env'
 load_dotenv(dotenv_path=env_path)
 
 
@@ -70,16 +70,11 @@ DB_NAME = os.getenv("DB_NAME")
 DB_USER = os.getenv("DB_USER")
 DB_PASS = os.getenv("DB_PASS")
 
-# Directories to save media files and logs
-MEDIA_ROOT = os.getenv("MEDIA_ROOT")
-SELENO_LOGS_DIR = os.getenv("SELENO_LOGS_DIR")
-SELENO_DIR = os.getenv("SELENO_DIR")
-
-ua_json = Path(__file__).resolve().parent.parent / '.env.ua.json'
+ua_json = f'{ SELENO_DIR }/.env.ua.json'
 with open(ua_json) as f:
     USER_AGENTS = json.load(f)
     
-creds_json = Path(__file__).resolve().parent.parent / '.env.creds.json'
+creds_json = f'{ SELENO_DIR }/.env.creds.json'
 with open(creds_json) as g:
     DCE_CREDS = json.load(g)
 
@@ -96,58 +91,58 @@ DLD_TIMEOUT = 300
 
 LOG_TIME_FORMAT = '%d/%m-%H:%M:%S'
 
-PUDATE = "published"
-DDLINE = "deadline"
-REFERE = "reference"
-CATEGC = "category"
-NUMBLO = "lots_count"
-OBJETC = "title"
-LIEUEX = "location"
-ACHETE = "client"
-TYPEAN = "type"
-PROCED = "procedure"
-MODEPA = "mode"
-REPONS = "ebid"
-LOTSSS = "lots"
-PRIXPL = "plans_price"
-DOMAIN = "domains"
-RETDOS = "address_withdrawal"
-DEPOFF = "address_bidding"
-LIEOUV = "address_opening"
-CONTNM = "contact_name"
-CONTML = "contact_email"
-CONTTL = "contact_phone"
-CONTFX = "contact_fax"
-IDENTI = "id"
-LINKKK = "link"
-PORTID = "chrono"
-ACRONY = "acronym"
-LOTNMB = "number"
-OBJETL = "title"
-CATEGL = "category"
-DESCRI = "description"
-ESTIMA = "estimate"
-CAUTIO = "bond"
-RESPME = "reserved"
-QUALIF = "qualifs"
-AGREME = "agrements"
-ECHANT = "samples"
-REUNIO = "meetings"
-VISITS = "visits"
-VARIAN = "variant"
-DCESIZ = "size_read"
-BYTESS = "size_bytes"
+# PUDATE = "published"
+# DDLINE = "deadline"
+# REFERE = "reference"
+# CATEGC = "category"
+# NUMBLO = "lots_count"
+# OBJETC = "title"
+# LIEUEX = "location"
+# ACHETE = "client"
+# TYPEAN = "type"
+# PROCED = "procedure"
+# MODEPA = "mode"
+# REPONS = "ebid"
+# LOTSSS = "lots"
+# PRIXPL = "plans_price"
+# DOMAIN = "domains"
+# RETDOS = "address_withdrawal"
+# DEPOFF = "address_bidding"
+# LIEOUV = "address_opening"
+# CONTNM = "contact_name"
+# CONTML = "contact_email"
+# CONTTL = "contact_phone"
+# CONTFX = "contact_fax"
+# IDENTI = "id"
+# LINKKK = "link"
+# PORTID = "chrono"
+# ACRONY = "acronym"
+# LOTNMB = "number"
+# OBJETL = "title"
+# CATEGL = "category"
+# DESCRI = "description"
+# ESTIMA = "estimate"
+# CAUTIO = "bond"
+# RESPME = "reserved"
+# QUALIF = "qualifs"
+# AGREME = "agrements"
+# ECHANT = "samples"
+# REUNIO = "meetings"
+# VISITS = "visits"
+# VARIAN = "variant"
+# DCESIZ = "size_read"
+# BYTESS = "size_bytes"
 
-ECHAND = "when"
-ECHANA = "where"
-REUNID = "when"
-REUNIA = "where"
-VISITD = "when"
-VISITA = "where"
-CANCEL = "cancelled"
+# ECHAND = "when"
+# ECHANA = "where"
+# REUNID = "when"
+# REUNIA = "where"
+# VISITD = "when"
+# VISITA = "where"
+# CANCEL = "cancelled"
 
-RVDATE = 'when'
-RVLIEU = 'where'
+# RVDATE = 'when'
+# RVLIEU = 'where'
 
 NA_PLH = ''
 TRUNCA = 32

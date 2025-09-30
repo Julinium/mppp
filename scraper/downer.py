@@ -14,10 +14,10 @@
     ## Files for items over certain age old.
 
 
-from . import helper
-from . import constants as C
+import helper
+import constants as C
 
-from .models import Tender, Change
+from scraper.models import Tender, Change
 
 def tenders2download():
     tenders = Tender.objects.all()

@@ -2,23 +2,23 @@ import traceback
 from rest_framework import serializers
 from django.db import transaction
 
-import os
-import django
-from django.conf import settings
+# import os
+# import django
+# from django.conf import settings
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "scraper.settings")
-django.setup()
+# os.environ.setdefault("DJANGO_SETTINGS_MODULE", "scraper.settings")
+# django.setup()
 
-from . import helper
+import helper
 
 
-from .models import (
+from scraper.models import (
     Tender, Lot, Agrement, Qualif, Kind, Domain, Mode, Procedure, 
-    Category, Change, Client, Meeting, Sample, Visit, FileToDownload
+    Category, Change, Client, Meeting, Sample, Visit, FileToDownload,
     RelAgrementLot, RelDomainTender, RelQualifLot
 )
 
-from .serializers import (
+from serializers import (
     TenderSerializer, LotSerializer, MeetingSerializer, SampleSerializer, VisitSerializer, 
     ModeSerializer, ProcedureSerializer, DomainSerializer, 
     CategorySerializer, ChangeSerializer, ClientSerializer, KindSerializer, AgrementSerializer, 
