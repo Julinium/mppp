@@ -2,22 +2,12 @@ import traceback
 from rest_framework import serializers
 from django.db import transaction
 
-# import os
-# import django
-# from django.conf import settings
-
-# os.environ.setdefault("DJANGO_SETTINGS_MODULE", "scraper.settings")
-# django.setup()
-
 import helper
-
-
 from scraper.models import (
     Tender, Lot, Agrement, Qualif, Kind, Domain, Mode, Procedure, 
     Category, Change, Client, Meeting, Sample, Visit, FileToDownload,
     RelAgrementLot, RelDomainTender, RelQualifLot
 )
-
 from serializers import (
     TenderSerializer, LotSerializer, MeetingSerializer, SampleSerializer, VisitSerializer, 
     ModeSerializer, ProcedureSerializer, DomainSerializer, 
@@ -98,21 +88,7 @@ def format(tender_json):
 
 
 @transaction.atomic
-def save(tender_data):
-    """
-    # Merge a nested JSON object into a Tender instance and its related objects in the database.
-    # Assumes no 'id' fields in the JSON. Deletes related objects (Lots, Meetings, etc.) that are
-    # absent in the JSON but present in the database.
-
-    # Args:
-    #     tender_data (dict): Nested JSON object representing a Tender instance without IDs.
-
-    # Returns:
-    #     Tender: The created or updated Tender instance.
-
-    # Raises:
-    #     serializers.ValidationError: If the JSON data is invalid.
-    """
+def save(tender_data):    
 
     formatted_data = format(tender_data)
     helper.printMessage('INFO', 'm.save', f"### Started saving formatted Tender data {formatted_data["chrono"]}")

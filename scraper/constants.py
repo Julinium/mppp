@@ -7,42 +7,21 @@ SELENO_DIR = str(Path(__file__).resolve().parent)
 env_path = f'{ SELENO_DIR }/.env'
 load_dotenv(dotenv_path=env_path)
 
-
-# More verbose output
-# DEBUG_MODE = True 
 VERBOSITY = 1
 BURST_LENGTH = 25
 
-LOGS_LEVELS = {
-    "TRACE" : 1,
-    "DEBUG" : 2,
-    "INFO"  : 3,
-    "WARN"  : 4,
-    "ERROR" : 5,
-    "FATAL" : 6,
-}
+LOGS_LEVELS = {"TRACE" : 1, "DEBUG" : 2, "INFO"  : 3, "WARN"  : 4, "ERROR" : 5, "FATAL" : 6,}
 
-# Instead of scraping the target website for items links, use those previously saved in imports/links.csv
 IMPORT_LINKS = False
-
-# Check existing items against portal for changes.
 REFRESH_EXISTING = True
-
-# Skip downloading DCE files.
 SKIP_DCE = True
 
-
-# Initialize parser
 parser = argparse.ArgumentParser()
-
-# Add arguments
 parser.add_argument('--level', type=str, required=False, help='debug for more verbose output.')
 parser.add_argument('--links', type=str, required=False, help='import to use already saved links.')
 parser.add_argument('--found', type=str, required=False, help='refresh to refresh existing items.')
 parser.add_argument('--dce', type=str, required=False, help='DCE files download.')
 
-
-# Parse arguments
 args = parser.parse_args()
 if args.level: 
     level = args.level.upper()
@@ -53,17 +32,13 @@ if args.links: IMPORT_LINKS = args.links.lower() == "import"
 if args.found: REFRESH_EXISTING = args.found.lower() == "refresh"
 if args.dce: SKIP_DCE = args.dce.lower() != "download"
 
+HEADLESS_MODE = True
 
-# Use Chromium without GUI. Set to True if running on a non-GUI system
-HEADLESS_MODE = True #False
-
-# Target website. Held for privacy
 SITE_ROOT = os.getenv("SITE_ROOT")
 SITE_INDEX = os.getenv("SITE_INDEX")
 LINK_PREFIX = os.getenv("LINK_PREFIX")
 LINK_STITCH = os.getenv("LINK_STITCH")
 
-# Database credentials. Held for security
 DB_SERVER = os.getenv("DB_SERVER")
 DB_PORT = os.getenv("DB_PORT")
 DB_NAME = os.getenv("DB_NAME")
@@ -90,59 +65,6 @@ REQ_TIMEOUT = 90
 DLD_TIMEOUT = 300
 
 LOG_TIME_FORMAT = '%d/%m-%H:%M:%S'
-
-# PUDATE = "published"
-# DDLINE = "deadline"
-# REFERE = "reference"
-# CATEGC = "category"
-# NUMBLO = "lots_count"
-# OBJETC = "title"
-# LIEUEX = "location"
-# ACHETE = "client"
-# TYPEAN = "type"
-# PROCED = "procedure"
-# MODEPA = "mode"
-# REPONS = "ebid"
-# LOTSSS = "lots"
-# PRIXPL = "plans_price"
-# DOMAIN = "domains"
-# RETDOS = "address_withdrawal"
-# DEPOFF = "address_bidding"
-# LIEOUV = "address_opening"
-# CONTNM = "contact_name"
-# CONTML = "contact_email"
-# CONTTL = "contact_phone"
-# CONTFX = "contact_fax"
-# IDENTI = "id"
-# LINKKK = "link"
-# PORTID = "chrono"
-# ACRONY = "acronym"
-# LOTNMB = "number"
-# OBJETL = "title"
-# CATEGL = "category"
-# DESCRI = "description"
-# ESTIMA = "estimate"
-# CAUTIO = "bond"
-# RESPME = "reserved"
-# QUALIF = "qualifs"
-# AGREME = "agrements"
-# ECHANT = "samples"
-# REUNIO = "meetings"
-# VISITS = "visits"
-# VARIAN = "variant"
-# DCESIZ = "size_read"
-# BYTESS = "size_bytes"
-
-# ECHAND = "when"
-# ECHANA = "where"
-# REUNID = "when"
-# REUNIA = "where"
-# VISITD = "when"
-# VISITA = "where"
-# CANCEL = "cancelled"
-
-# RVDATE = 'when'
-# RVLIEU = 'where'
 
 NA_PLH = ''
 TRUNCA = 32
