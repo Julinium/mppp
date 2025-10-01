@@ -19,20 +19,20 @@ if ! test -e "$_logs_file"; then
 fi
 
 if test -e "$_lock_file"; then
-    echo "Execution prevented by a Lock file: $_lock_file"
-    echo "Another script is probably running or did not finish as expected."
-    echo "The lock file will be removed on next boot. It can also be removed manually."
+    echo "Execution prevented by a Lock file: $_lock_file" >> "$_logs_file"
+    echo "Another script is probably running or did not finish as expected." >> "$_logs_file"
+    echo "The lock file will be removed on next boot. It can also be removed manually." >> "$_logs_file"
 else
     touch $_lock_file
     cd $SCRIPT_DIR
-    echo "Working directory: $(pwd)"
+    echo "Working directory: $(pwd)" >> "$_logs_file"
     source $SCRIPT_DIR/.venv/bin/activate
-    echo "Using python from: $(which python)"
+    echo "Using python from: $(which python)" >> "$_logs_file"
     python worker.py "$@" >> "$_logs_file"
     deactivate
-    echo "Script finished executing. See logs and system journal for details."
+    echo "Script finished executing. See logs and system journal for details." >> "$_logs_file"
     if test -e "$_lock_file"; then
-        echo "Trying to remove Lock file after script finished."
+        echo "Trying to remove Lock file after script finished." >> "$_logs_file"
         rm -f -- $_lock_file
     fi
 fi
