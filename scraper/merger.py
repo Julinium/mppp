@@ -2,6 +2,7 @@ import traceback
 from rest_framework import serializers
 from django.db import transaction
 
+import constants as C
 import helper
 from scraper.models import (
     Tender, Lot, Agrement, Qualif, Kind, Domain, Mode, Procedure, 

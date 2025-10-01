@@ -10,7 +10,7 @@ django.setup()
 
 import json
 
-import helper, linker, getter , merger
+import helper, linker, getter , merger, downer
 import constants as C
 
 
@@ -62,5 +62,16 @@ else:
     helper.printMessage('ERROR', 'worker', "========== Links list was empty ==========", 2, 3)
 
 helper.printMessage('INFO', 'worker', f"Saving data finished. Created {created}, updated {updated} Tenders.", 2, 1)
-    
+
+if C.SKIP_DCE:
+    helper.printMessage('INFO', 'worker', "SKIP_DCE set. Skipping DCE files.")
+else:
+    dceed = 0
+    helper.printMessage('INFO', 'worker', "Getting the list of DCE files to download ...")
+    dceables = downer.getFileables()
+    for d in dceables:
+        if downer.getDCE(d) == 0:
+            dceed += 1
+    helper.printMessage('INFO', 'worker', f"Downloaded DCE files for {dceed} items", 2)
+
 helper.printMessage('INFO', 'worker', f"====================== Done ======================", 3, 1)
