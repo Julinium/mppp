@@ -14,7 +14,7 @@ LOGS_LEVELS = {"TRACE" : 1, "DEBUG" : 2, "INFO"  : 3, "WARN"  : 4, "ERROR" : 5, 
 
 IMPORT_LINKS = False
 REFRESH_EXISTING = True
-SKIP_DCE = True
+SKIP_DCE = False
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--level', type=str, required=False, help='debug for more verbose output.')
@@ -44,6 +44,8 @@ DB_PORT = os.getenv("DB_PORT")
 DB_NAME = os.getenv("DB_NAME")
 DB_USER = os.getenv("DB_USER")
 DB_PASS = os.getenv("DB_PASS")
+
+MEDIA_ROOT = os.getenv("MEDIA_ROOT")
 
 ua_json = f'{ SELENO_DIR }/.env.ua.json'
 with open(ua_json) as f:

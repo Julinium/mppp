@@ -157,25 +157,25 @@ def get_total_folder_size(folder_path):
     return total_size_bytes
 
 
-def parseSize(size_str):
-    mille = 1024
-    # Replace comma with dot for decimal conversion
-    size_str = size_str.replace(',', '.').strip()
+# def parseSize(size_str):
+#     mille = 1024
+#     # Replace comma with dot for decimal conversion
+#     size_str = size_str.replace(',', '.').strip()
     
-    # Separate the number and unit
-    parts = size_str.split()
-    if len(parts) != 2: raise ValueError(f"Invalid format: {size_str}")
+#     # Separate the number and unit
+#     parts = size_str.split()
+#     if len(parts) != 2: raise ValueError(f"Invalid format: {size_str}")
     
-    number, unit = parts
-    number = float(number)
+#     number, unit = parts
+#     number = float(number)
     
-    # Convert to bytes
-    if unit.upper() == 'K':
-        return int(number * mille)
-    elif unit.upper() == 'M':
-        return int(number * mille * mille)
-    else:
-        raise ValueError(f"Unknown unit: {unit}")
+#     # Convert to bytes
+#     if unit.upper() == 'K':
+#         return int(number * mille)
+#     elif unit.upper() == 'M':
+#         return int(number * mille * mille)
+#     else:
+#         raise ValueError(f"Unknown unit: {unit}")
 
 
 def getDriver(url=''):
@@ -318,31 +318,31 @@ def sleepRandom(Fm=55, To=115):
     return 0
 
 
-def cleanEmptyDceFiles(dry_run=True, base_folder=''):
-    if base_folder == '': base_folder = f'{C.MEDIA_ROOT}/dce'
+# def cleanEmptyDceFiles(dry_run=True, base_folder=''):
+#     if base_folder == '': base_folder = f'{C.MEDIA_ROOT}/dce'
 
-    nf, nd = 0, 0
-    printMessage('INFO', 'h.cleanEmptyDceFiles', f"Deleting empty files from: {base_folder}")
-    # Iterate through all items in the base folder
-    for subfolder in os.listdir(base_folder):
-        subfolder_path = os.path.join(base_folder, subfolder)
+#     nf, nd = 0, 0
+#     printMessage('INFO', 'h.cleanEmptyDceFiles', f"Deleting empty files from: {base_folder}")
+#     # Iterate through all items in the base folder
+#     for subfolder in os.listdir(base_folder):
+#         subfolder_path = os.path.join(base_folder, subfolder)
 
-        # Check if the item is a subfolder and matches the pattern "DCE-{id}"
-        if os.path.isdir(subfolder_path) and subfolder.startswith("DCE-"):
-            nd += 1
-            # printMessage('DEBUG', 'h.cleanEmptyDceFiles', f"Browsing folder: {subfolder_path}")
+#         # Check if the item is a subfolder and matches the pattern "DCE-{id}"
+#         if os.path.isdir(subfolder_path) and subfolder.startswith("DCE-"):
+#             nd += 1
+#             # printMessage('DEBUG', 'h.cleanEmptyDceFiles', f"Browsing folder: {subfolder_path}")
 
-            # Iterate through files in the subfolder
-            for file_name in os.listdir(subfolder_path):
-                file_path = os.path.join(subfolder_path, file_name)
+#             # Iterate through files in the subfolder
+#             for file_name in os.listdir(subfolder_path):
+#                 file_path = os.path.join(subfolder_path, file_name)
 
-                # Check if the item is a file and its size is 0 bytes
-                if os.path.isfile(file_path) and os.path.getsize(file_path) == 0:
-                    # print(f"Deleting empty file: {file_path}")
-                    if dry_run: 
-                        printMessage('DEBUG', 'h.cleanEmptyDceFiles', f"DRY-RUN = empty file: {file_path}")
-                    else:   
-                        printMessage('DEBUG', 'h.cleanEmptyDceFiles', f"Deleting empty file: {file_path}")
-                        os.remove(file_path)
-                    nf += 1
-    printMessage('INFO', 'h.cleanEmptyDceFiles', f"Subfolders scanned: {nd}, Files affected: {nf}")
+#                 # Check if the item is a file and its size is 0 bytes
+#                 if os.path.isfile(file_path) and os.path.getsize(file_path) == 0:
+#                     # print(f"Deleting empty file: {file_path}")
+#                     if dry_run: 
+#                         printMessage('DEBUG', 'h.cleanEmptyDceFiles', f"DRY-RUN = empty file: {file_path}")
+#                     else:   
+#                         printMessage('DEBUG', 'h.cleanEmptyDceFiles', f"Deleting empty file: {file_path}")
+#                         os.remove(file_path)
+#                     nf += 1
+#     printMessage('INFO', 'h.cleanEmptyDceFiles', f"Subfolders scanned: {nd}, Files affected: {nf}")

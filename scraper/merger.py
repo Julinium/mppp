@@ -119,7 +119,7 @@ def save(tender_data):
             helper.printMessage('DEBUG', 'm.save', "+++ Category already exists. Skipping.")
         else:
             category_serializer = CategorySerializer(data=category_data)
-            helper.printMessage('DEBUG', 'm.save', f"+++ Category to be created: {label}")
+            helper.printMessage('DEBUG', 'm.save', f"+++ Category to be created: {label[:C.TRUNCA]}...")
             category_serializer.is_valid(raise_exception=True)
             category = category_serializer.save()
             change = {"category" : {"old_value": "", "new_value": category.label}}
@@ -139,7 +139,7 @@ def save(tender_data):
             helper.printMessage('DEBUG', 'm.save', "+++ Client already exists. Skipping.")
         else:
             client_serializer = ClientSerializer(data=client_data)
-            helper.printMessage('DEBUG', 'm.save', f"+++ Client to be created: {name}")
+            helper.printMessage('DEBUG', 'm.save', f"+++ Client to be created: {name[:C.TRUNCA]}...")
             client_serializer.is_valid(raise_exception=True)
             client = client_serializer.save()
             change = {"client" : {"old_value": "", "new_value": client.name}}
@@ -156,7 +156,7 @@ def save(tender_data):
             helper.printMessage('DEBUG', 'm.save', "+++ Procedure Type already exists. Skipping.")
         else:
             kind_serializer = KindSerializer(data=kind_data)
-            helper.printMessage('DEBUG', 'm.save', f"+++ Procedure Type to be created: {name}")
+            helper.printMessage('DEBUG', 'm.save', f"+++ Procedure Type to be created: {name[:C.TRUNCA]}...")
             kind_serializer.is_valid(raise_exception=True)
             kind = kind_serializer.save()
             change = {"kind" : {"old_value": "", "new_value": kind.name}}
@@ -173,7 +173,7 @@ def save(tender_data):
             helper.printMessage('DEBUG', 'm.save', "+++ Awarding Mode already exists. Skipping.")
         else:
             mode_serializer = ModeSerializer(data=mode_data)
-            helper.printMessage('DEBUG', 'm.save', f"+++ Awarding Mode to be created: {name}")
+            helper.printMessage('DEBUG', 'm.save', f"+++ Awarding Mode to be created: {name[:C.TRUNCA]}...")
             mode_serializer.is_valid(raise_exception=True)
             mode = mode_serializer.save()
             change = {"mode" : {"old_value": "", "new_value": mode.name}}
@@ -190,7 +190,7 @@ def save(tender_data):
             helper.printMessage('DEBUG', 'm.save', "+++ Procedure already exists. Skipping.")
         else:
             procedure_serializer = ProcedureSerializer(data=procedure_data)
-            helper.printMessage('DEBUG', 'm.save', f"+++ Procedure to be created: {name}")
+            helper.printMessage('DEBUG', 'm.save', f"+++ Procedure to be created: {name[:C.TRUNCA]}...")
             procedure_serializer.is_valid(raise_exception=True)
             procedure = procedure_serializer.save()
             change = {"procedure" : {"old_value": "", "new_value": procedure.name}}
@@ -235,7 +235,7 @@ def save(tender_data):
             helper.printMessage('DEBUG', 'm.save', "+++ Domain of Activiry already exists. Skipping.")
         else:
             domain_serializer = DomainSerializer(data=domain_data)
-            helper.printMessage('DEBUG', 'm.save', f"+++ Domain of Activiry to be created: {name}")
+            helper.printMessage('DEBUG', 'm.save', f"+++ Domain of Activiry to be created: {name[:C.TRUNCA]}...")
             domain_serializer.is_valid(raise_exception=True)
             domain = domain_serializer.save()
             
@@ -296,7 +296,7 @@ def save(tender_data):
                 lot_category_serializer = CategorySerializer(lot_category, data=lot_category_data, partial=True)
             else:
                 lot_category_serializer = CategorySerializer(data=lot_category_data)
-                helper.printMessage('TRACE', 'm.save', f"#### Lot Category to be created: {label}")
+                helper.printMessage('TRACE', 'm.save', f"#### Lot Category to be created: {label[:C.TRUNCA]}...")
                 lot_category_serializer.is_valid(raise_exception=True)
                 lot_category = lot_category_serializer.save()
                 if not tender_create: 
@@ -436,7 +436,7 @@ def save(tender_data):
                 agrement_serializer = AgrementSerializer(agrement, data=agrement_data, partial=True)
             else:
                 agrement_serializer = AgrementSerializer(data=agrement_data)
-                helper.printMessage('TRACE', 'm.save', f"#### Agrement to be created: {name}")
+                helper.printMessage('TRACE', 'm.save', f"#### Agrement to be created: {name[:C.TRUNCA]}...")
                 agrement_serializer.is_valid(raise_exception=True)
                 agrement = agrement_serializer.save()
                 if not tender_create: 
@@ -471,7 +471,7 @@ def save(tender_data):
                 qualif_serializer = QualifSerializer(qualif, data=qualif_data, partial=True)
             else:
                 qualif_serializer = QualifSerializer(data=qualif_data)
-                helper.printMessage('TRACE', 'm.save', f"#### Qualif to be created: {name}")
+                helper.printMessage('TRACE', 'm.save', f"#### Qualif to be created: {name[:C.TRUNCA]}...")
                 qualif_serializer.is_valid(raise_exception=True)
                 qualif = qualif_serializer.save()
                 if not tender_create:
