@@ -2,7 +2,7 @@
 
 echo "JOB STARTED >>>>>>>>>>>>>>>>>>>>>>>>"
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}" && cd ..)" && pwd)"
 
 _now=$(date +"%Y%m%d-%H%M%S")
 _logs_dir="$SCRIPT_DIR/logs"
