@@ -72,6 +72,10 @@ else:
     for d in dceables:
         if downer.getDCE(d) == 0:
             dceed += 1
+        if dceed > 0:
+            if dceed % C.BURST_LENGTH == 0:
+                helper.printMessage('INFO', 'worker', "Sleeping for a while.", 1)
+                helper.sleepRandom(10, 30)
     helper.printMessage('INFO', 'worker', f"Downloaded DCE files for {dceed} items", 2)
 
 helper.printMessage('INFO', 'worker', f"====================== Done ======================", 3, 1)

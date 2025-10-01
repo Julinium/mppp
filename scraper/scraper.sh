@@ -28,7 +28,7 @@ else
     echo "Working directory: $(pwd)"
     source $SCRIPT_DIR/.venv/bin/activate
     echo "Using python from: $(which python)"
-    python -m scraper.worker "$@" >> "$_logs_file"
+    python worker.py "$@" >> "$_logs_file"
     deactivate
     echo "Script finished executing. See logs and system journal for details."
     if test -e "$_lock_file"; then
