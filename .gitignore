@@ -1,6 +1,7 @@
 */__pycache__
 .venv
+scraper/logs/
 .env*
-scraper/migrations
-mppp/migrations
+scraper/migrations/
+mppp/migrations/
 .tmp
