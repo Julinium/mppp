@@ -19,11 +19,7 @@ import constants as C
 
 from scraper.models import Tender, Change
 
-def tenders2download():
-    tenders = Tender.objects.all()
+def getFileables():
+    tenders = Tender.objects.filter(files_to_get__closed=False).distinct()
 
     return tenders
-
-    python manage.py makemigrations myapp
-    usage: manage.py [-h] [--arg1 ARG1] [--arg2 ARG2] [--arg3 ARG]
-    manage.py: error: unrecognized arguments: makemigrations myapp

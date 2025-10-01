@@ -5,7 +5,7 @@ from django.db import transaction
 import helper
 from scraper.models import (
     Tender, Lot, Agrement, Qualif, Kind, Domain, Mode, Procedure, 
-    Category, Change, Client, Meeting, Sample, Visit, FileToDownload,
+    Category, Change, Client, Meeting, Sample, Visit, FileToGet,
     RelAgrementLot, RelDomainTender, RelQualifLot
 )
 from serializers import (
@@ -321,7 +321,7 @@ def save(tender_data):
             lot_serializer = LotSerializer(lot, data=lot_data, partial=True)
         else:
             lot_serializer = LotSerializer(data=lot_data)
-            helper.printMessage('TRACE', 'm.save', f"#### Lot to be created: {lot_title}")
+            helper.printMessage('TRACE', 'm.save', f"#### Lot to be created: {lot_title[:C.TRUNCA]}...")
             lot_serializer.is_valid(raise_exception=True)
             lot = lot_serializer.save(tender=tender)
             if not tender_create:
@@ -518,8 +518,8 @@ def save(tender_data):
             helper.printMessage('WARN', 'm.save', "---- Exception raised saving change to database.")
             traceback.print_exc()
         try:
-            helper.printMessage('TRACE', 'm.save', "#### Adding DCE request for Tender ... ")
-            f2d = FileToDownload(tender=tender, reason="Updated")
+            helper.printMessage('TRACE', 'm.save', f"#### Adding DCE request for Tender {tender.chrono} ... ")
+            f2d = FileToGet(tender=tender, reason="Updated")
             f2d.save()
         except:
             helper.printMessage('WARN', 'm.save', "---- Exception raised saving DCE request.")
@@ -530,7 +530,7 @@ def save(tender_data):
     if tender_create:
         try:
             helper.printMessage('TRACE', 'm.save', "#### Adding DCE request for Tender ... ")
-            f2d = FileToDownload(tender=tender)
+            f2d = FileToGet(tender=tender)
             f2d.save()
         except:
             helper.printMessage('WARN', 'm.save', "---- Exception raised saving DCE request.")
