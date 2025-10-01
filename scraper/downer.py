@@ -114,6 +114,7 @@ def getDCE(tender):
     # url_form = url_query
     url_file = make_link('file')
     
+    helper.printMessage('DEBUG', 'd.getDCE', 'Building Tender and files links.')
     helper.printMessage('TRACE', 'd.getDCE', f'Cons link : {url_query.replace(C.SITE_INDEX, '')}')
     helper.printMessage('TRACE', 'd.getDCE', f'File link : {url_file.replace(C.SITE_INDEX,'')}')
 
@@ -126,12 +127,12 @@ def getDCE(tender):
     
     if request_query.status_code != 200 : 
         helper.printMessage('ERROR', 'd.getDCE', f'Download query: Response Status Code: {request_file.status_code} !')
-        helper.printMessage('ERROR', 'd.getDCE', f'\n\n\n===========\n{soup}\n===========\n\n')
+        helper.printMessage('TRACE', 'd.getDCE', f'\n\n\n===========\n{soup}\n===========\n\n')
         
         helper.sleepRandom(C.SLEEP_4XX_MIN, C.SLEEP_4XX_MAX)
         return request_query.status_code
     else:
-        helper.printMessage('DEBUG', 'd.getDCE', f'Download query: Successful.')
+        helper.printMessage('DEBUG', 'd.getDCE', f'Download query returned 200.')
 
     prado_page_state = None
     try: prado_page_state = soup.find(id="PRADO_PAGESTATE")['value']
