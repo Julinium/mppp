@@ -220,7 +220,7 @@ def getDCE(tender):
     try:
         with open(filename, 'wb') as file:
             bytes_written = file.write(request_file.content)
-            helper.printMessage('DEBUG', 'd.getDCE', f'### Bytes written: {bytes_written}/{len(request_file.content)}.')
+            helper.printMessage('DEBUG', 'd.getDCE', f'... Bytes written: {bytes_written}/{len(request_file.content)}.')
 
         # Verify the file size
         if bytes_written == len(request_file.content):
@@ -228,6 +228,7 @@ def getDCE(tender):
                 helper.printMessage('DEBUG', 'd.getDCE', f'Trying to remove file request for {chrono}.')
                 f2g = tender.files_to_get.all()
                 f2g.delete()
+                helper.printMessage('DEBUG', 'd.getDCE', f'+++ Removed file request for {chrono}.')
             except Exception as x:
                 helper.printMessage('ERROR', 'd.getDCE', "Exception removing file request.")
                 traceback.print_exc()
