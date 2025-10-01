@@ -46,6 +46,9 @@ DB_USER = os.getenv("DB_USER")
 DB_PASS = os.getenv("DB_PASS")
 
 MEDIA_ROOT = os.getenv("MEDIA_ROOT")
+FILE_PREFIX   = 'eMarches.com'
+SLEEP_4XX_MIN = 377
+SLEEP_4XX_MAX = 777
 
 ua_json = f'{ SELENO_DIR }/.env.ua.json'
 with open(ua_json) as f:

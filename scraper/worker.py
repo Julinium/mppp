@@ -66,10 +66,14 @@ helper.printMessage('INFO', 'worker', f"Saving data finished. Created {created},
 if C.SKIP_DCE:
     helper.printMessage('INFO', 'worker', "SKIP_DCE set. Skipping DCE files.")
 else:
-    dceed = 0
-    helper.printMessage('INFO', 'worker', "Getting the list of DCE files to download ...")
+    i, dceed = 0, 0
+    helper.printMessage('INFO', 'worker', "Getting the list of DCE files to download ...", 2, 1)
     dceables = downer.getFileables()
+    c = dceables.count()
+    helper.printMessage('INFO', 'worker', f"Started getting DCE files for { c } items ...")
     for d in dceables:
+        i += 1
+        helper.printMessage('INFO', 'worker', f"Getting DCE files for item { d.chrono }: { i }/{ c } ...", 2)
         if downer.getDCE(d) == 0:
             dceed += 1
         if dceed > 0:

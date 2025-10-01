@@ -13,21 +13,22 @@
     ## Orphan files.
     ## Files for items over certain age old.
 
-import os, random, re, requests
+import os, random, re, requests, traceback
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 
 import helper
 import constants as C
 
-from scraper.models import Tender
+from scraper.models import Tender, FileToGet
+
 
 def getFileables():
     helper.printMessage("DEBUG", 'd.getFileables', "Getting fresh Tenders (created or recently updated) ...")
     fresh_tenders = Tender.objects.filter(files_to_get__closed=False).distinct()
     helper.printMessage("DEBUG", 'd.getFileables', f"Got {fresh_tenders.count()} fresh Tenders.")
     helper.printMessage("DEBUG", 'd.getFileables', "Getting Tenders with no or empty DCE folders ...")
-    nodce_tenders = getEmpties()
+    nodce_tenders = getEmpties().distinct()
     helper.printMessage("DEBUG", 'd.getFileables', f"Got {nodce_tenders.count()} Tenders with no or empty folders.")
 
     return fresh_tenders | nodce_tenders
@@ -44,7 +45,7 @@ def getEmpties(past_days=C.CLEAN_DCE_AFTER_DAYS, batch_size=1000):
     helper.printMessage("DEBUG", 'd.getEmpties', "Checking against files on disk ...")
     for tender_id, chrono in current_tenders.values_list('id', 'chrono').iterator(chunk_size=batch_size):
         if chrono:
-            if is_empty_or_nonexistent(f"{C.MEDIA_ROOT}/dce/{DL_PATH_PREFIX}{chrono}"):
+            if is_empty_or_nonexistent(f"{C.MEDIA_ROOT}/dce/{C.DL_PATH_PREFIX}{chrono}"):
                 tenders_without_files.append(tender_id)
 
     return current_tenders.filter(id__in=tenders_without_files)
@@ -127,7 +128,7 @@ def getDCE(tender):
         helper.printMessage('ERROR', 'd.getDCE', f'Download query: Response Status Code: {request_file.status_code} !')
         helper.printMessage('ERROR', 'd.getDCE', f'\n\n\n===========\n{soup}\n===========\n\n')
         
-        helper.sleepRandom(SLEEP_4XX_MIN, SLEEP_4XX_MAX)
+        helper.sleepRandom(C.SLEEP_4XX_MIN, C.SLEEP_4XX_MAX)
         return request_query.status_code
     else:
         helper.printMessage('DEBUG', 'd.getDCE', f'Download query: Successful.')
@@ -180,7 +181,7 @@ def getDCE(tender):
     
     if request_form.status_code != 200 :
         helper.printMessage('ERROR', 'd.getDCE', f'Form submission: Response Status Code: {request_form.status_code} !')
-        helper.sleepRandom(SLEEP_4XX_MIN, SLEEP_4XX_MAX)
+        helper.sleepRandom(C.SLEEP_4XX_MIN, C.SLEEP_4XX_MAX)
         return request_form.status_code
     else: helper.printMessage('DEBUG', 'd.getDCE', f'Form submission: Successful')
 
@@ -195,7 +196,7 @@ def getDCE(tender):
     
     if request_file.status_code != 200 :
         helper.printMessage('ERROR', 'd.getDCE', f'Getting file: Response Status Code: {request_file.status_code} !')
-        helper.sleepRandom(SLEEP_4XX_MIN, SLEEP_4XX_MAX)
+        helper.sleepRandom(C.SLEEP_4XX_MIN, C.SLEEP_4XX_MAX)
         return request_file.status_code
     else: helper.printMessage('DEBUG', 'd.getDCE', f'Getting file returned Status Code: {request_file.status_code}')
 
@@ -212,7 +213,7 @@ def getDCE(tender):
     file_extension = os.path.splitext(filename_cd)[1]
     cleaned_name = helper.text2Alphanum(fiel_name_base, allCapps=True, dash='-', minLen=8, firstAlpha='M', fillerChar='0')
     
-    filename_base = f'{FILE_PREFIX}-{cleaned_name}{file_extension}'
+    filename_base = f'{C.FILE_PREFIX}-{cleaned_name}{file_extension}'
     filename = os.path.join(con_path, filename_base)
     helper.printMessage('DEBUG', 'd.getDCE', f'Writing file content to {filename_base} ... ')
 
@@ -223,20 +224,25 @@ def getDCE(tender):
 
         # Verify the file size
         if bytes_written == len(request_file.content):
-            # if session:
             try:
-                helper.printMessage('DEBUG', 'd.getDCE', f'Trying to update file size bytes for id : {chrono}.')
-                # consino = consExists(session, chrono)
-                # if consino:
-                if consino.size_bytes != bytes_written:
-                    helper.printMessage('DEBUG', 'd.getDCE', f'Updating file size bytes for id : {chrono}.')
+                helper.printMessage('DEBUG', 'd.getDCE', f'Trying to remove file request for {chrono}.')
+                f2g = tender.files_to_get.all()
+                f2g.delete()
+            except Exception as x:
+                helper.printMessage('ERROR', 'd.getDCE', "Exception removing file request.")
+                traceback.print_exc()
+
+            if tender.size_bytes != bytes_written:
+                try:
+                    helper.printMessage('DEBUG', 'd.getDCE', f'Updating file size bytes for {chrono}.')
                     tender.size_bytes = bytes_written
                     tender.save()
-                else:
-                    helper.printMessage('DEBUG', 'd.getDCE', f'File size bytes for id {chrono} was the same.')
-            except Exception as x:
-                helper.printMessage('ERROR', 'd.getDCE', "Exception updating file size bytes on database.")
-                traceback.print_exc()
+                except Exception as x:
+                    helper.printMessage('ERROR', 'd.getDCE', "Exception updating file size bytes.")
+                    traceback.print_exc()                
+            else:
+                helper.printMessage('DEBUG', 'd.getDCE', f'File size bytes for id {chrono} was the same.')
+            
         else:
             raise IOError("File size mismatch: Not all content was written.")
         if os.path.getsize(filename) == 0: raise IOError("File was created but is empty. Go and know why!")
