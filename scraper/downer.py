@@ -114,8 +114,8 @@ def getDCE(tender):
     # url_form = url_query
     url_file = make_link('file')
     
-    helper.printMessage('DEBUG', 'd.getDCE', f'Cons link : {url_query.replace(C.SITE_INDEX, '')}')
-    helper.printMessage('DEBUG', 'd.getDCE', f'File link : {url_file.replace(C.SITE_INDEX,'')}')
+    helper.printMessage('TRACE', 'd.getDCE', f'Cons link : {url_query.replace(C.SITE_INDEX, '')}')
+    helper.printMessage('TRACE', 'd.getDCE', f'File link : {url_file.replace(C.SITE_INDEX,'')}')
 
     try: request_query = http_session.get(url_query, headers=headino, timeout=C.REQ_TIMEOUT)
     except Exception as xc: 

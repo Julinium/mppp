@@ -1,7 +1,7 @@
 .venv/
 .env
 logs/
-scraper/crony/.*
+scraper/crony/
 scraper/migrations/
 scraper/__pycache__
 .env.creds.json

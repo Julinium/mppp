@@ -1,5 +1,6 @@
 import os, sys
 import django
+from datetime import datetime, timedelta
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(project_root)
@@ -14,11 +15,7 @@ import helper, linker, getter , merger, downer
 import constants as C
 
 
-# IMPORT_LINKS = C.IMPORT_LINKS
-# REFRESH_EXISTING = C.REFRESH_EXISTING
-
-# REFRESH_EXISTING = True
-# IMPORT_LINKS = True
+started_time = datetime.now()
 
 helper.printBanner()
 helper.printMessage('INFO', 'worker', "========== The unlazy worker started working ==========", 1, 1)
@@ -61,19 +58,20 @@ if ll > 0:
 else:
     helper.printMessage('ERROR', 'worker', "========== Links list was empty ==========", 2, 3)
 
-helper.printMessage('INFO', 'worker', f"Saving data finished. Created {created}, updated {updated} Tenders.", 2, 1)
+helper.printMessage('INFO', 'worker', f"Saving data finished.", 2, 1)
 
+dceed = 0
 if C.SKIP_DCE:
     helper.printMessage('INFO', 'worker', "SKIP_DCE set. Skipping DCE files.")
 else:
-    i, dceed = 0, 0
+    i = 0
     helper.printMessage('INFO', 'worker', "Getting the list of DCE files to download ...", 2, 1)
     dceables = downer.getFileables()
     c = dceables.count()
     helper.printMessage('INFO', 'worker', f"Started getting DCE files for { c } items ...")
     for d in dceables:
         i += 1
-        helper.printMessage('INFO', 'worker', f"Getting DCE files for item { d.chrono }: { i }/{ c } ...", 2)
+        helper.printMessage('INFO', 'worker', f"Getting DCE files for { i }/{ c } : { d.chrono } ...", 2)
         if downer.getDCE(d) == 0:
             dceed += 1
         if dceed > 0:
@@ -82,4 +80,10 @@ else:
                 helper.sleepRandom(10, 30)
     helper.printMessage('INFO', 'worker', f"Downloaded DCE files for {dceed} items", 2)
 
-helper.printMessage('INFO', 'worker', f"====================== Done ======================", 3, 1)
+
+finished_time = datetime.now()
+it_took = finished_time - started_time
+
+helper.printMessage('INFO', 'worker', f"Created {created}, updated {updated} Tenders. Downloaded {dceed} DCE files.", 2)
+helper.printMessage('INFO', 'worker', f"How long did it take: { it_took }")
+helper.printMessage('INFO', 'worker', f"====================== Done ======================", 1, 1)
