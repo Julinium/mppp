@@ -186,7 +186,7 @@ def getDCE(tender):
     else: helper.printMessage('DEBUG', 'd.getDCE', f'Form submission: Successful')
 
     try:
-        helper.printMessage('DEBUG', 'd.getDCE', f'Requesting file at : {url_file.replace(C.SITE_INDEX,'')}')
+        helper.printMessage('DEBUG', 'd.getDCE', f'Requesting file for Tender { tender.chrono }')
         request_file = http_session.get(url_file, headers=headino, timeout=C.DLD_TIMEOUT)
     except requests.exceptions.Timeout:
         helper.printMessage('ERROR', 'd.getDCE', "Request timed out! Exception message: " + str(xc))
