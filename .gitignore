@@ -5,3 +5,4 @@ scraper/logs/
 scraper/migrations/
 mppp/migrations/
 .tmp
+scraper/crony/.lock
