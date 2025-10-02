@@ -349,9 +349,9 @@ class Tender(models.Model):
         app_label = 'scraper'
         db_table = 'tender'
 
-    # @property
-    # def dce_folder_path(self):
-    #     return path.join(C.MEDIA_ROOT, f'dce/{C.DL_PATH_PREFIX}{self.chrono}')
+    @property
+    def dce_folder_path(self):
+        return path.join(C.MEDIA_ROOT, f'dce/{C.DL_PATH_PREFIX}{self.chrono}')
     
     def __str__(self):
         return f"{self.chrono} - {self.reference}: {self.title}"
