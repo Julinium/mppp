@@ -352,13 +352,15 @@ class Tender(models.Model):
     @property
     def dce_folder_path(self):
         return path.join(C.MEDIA_ROOT, f'dce/{C.DL_PATH_PREFIX}{self.chrono}')
-    
+
     def __str__(self):
         return f"{self.chrono} - {self.reference}: {self.title}"
 
     def save(self, *args, **kwargs):
+        self.updated = None
         if self.pk is not None:
             self.updated = timezone.now()
+
         super().save(*args, **kwargs)
 
 
