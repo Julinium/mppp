@@ -60,7 +60,7 @@ else:
 
 helper.printMessage('INFO', 'worker', f"Saving data finished.", 2, 1)
 
-dceed = 0
+dceed, fceed = 0, 0
 if C.SKIP_DCE:
     helper.printMessage('INFO', 'worker', "SKIP_DCE set. Skipping DCE files.")
 else:
@@ -72,10 +72,15 @@ else:
     for d in dceables:
         i += 1
         helper.printMessage('INFO', 'worker', f"Getting DCE files for { i }/{ c } : { d.chrono } ...", 2)
-        if downer.getDCE(d) == 0:
+        getdce = downer.getDCE(d)
+        if getdce == 0:
             dceed += 1
-        if dceed > 0:
-            if dceed % C.BURST_LENGTH == 0:
+        else:
+            fceed += 1
+
+        hceed = dceed + fceed
+        if hceed > 0:
+            if hceed % C.BURST_LENGTH == 0:
                 helper.printMessage('INFO', 'worker', "Sleeping for a while.", 1)
                 helper.sleepRandom(10, 30)
     helper.printMessage('INFO', 'worker', f"Downloaded DCE files for {dceed} items", 2)
@@ -84,6 +89,6 @@ else:
 finished_time = datetime.now()
 it_took = finished_time - started_time
 
-helper.printMessage('INFO', 'worker', f"Created {created}, updated {updated} Tenders. Downloaded {dceed} DCE files.", 2)
+helper.printMessage('INFO', 'worker', f"Created {created}, updated {updated} Tenders. Downloaded {dceed} DCE files, {fceed} downloads failed.", 2)
 helper.printMessage('INFO', 'worker', f"How long did it take: { it_took }")
 helper.printMessage('INFO', 'worker', f"====================== Done ======================", 1, 1)
