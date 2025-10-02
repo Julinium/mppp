@@ -6,4 +6,4 @@ logs/
 crony/
 media/
 migrations/
-tester.py
+tester.*
