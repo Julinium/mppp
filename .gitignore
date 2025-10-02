@@ -1,8 +1,5 @@
-*/__pycache__
+__pycache__/
 .venv
-scraper/logs/
 .env*
-scraper/migrations/
 mppp/migrations/
 .tmp
-scraper/crony/

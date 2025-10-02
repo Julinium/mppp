@@ -90,5 +90,5 @@ finished_time = datetime.now()
 it_took = finished_time - started_time
 
 helper.printMessage('INFO', 'worker', f"Created {created}, updated {updated} Tenders. Downloaded {dceed} DCE files, {fceed} downloads failed.", 2)
-helper.printMessage('INFO', 'worker', f"How long did it take: { it_took }")
-helper.printMessage('INFO', 'worker', f"====================== Done ======================", 1, 1)
+helper.printMessage('INFO', 'worker', f"That took our unlazy worker { it_took }.")
+helper.printMessage('INFO', 'worker', f"============ The unlazy worker is done working ============", 1, 1)
