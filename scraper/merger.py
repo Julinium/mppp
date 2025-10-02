@@ -123,7 +123,7 @@ def save(tender_data):
             helper.printMessage('DEBUG', 'm.save', f"+++ Category to be created: {label[:C.TRUNCA]}...")
             category_serializer.is_valid(raise_exception=True)
             category = category_serializer.save()
-            change = {"field": "category" , "old_value": "", "new_value": category.label}}
+            change = {"field": "category" , "old_value": "", "new_value": category.label}
             changed_fields.append(change)
 
     else:
@@ -143,7 +143,7 @@ def save(tender_data):
             helper.printMessage('DEBUG', 'm.save', f"+++ Client to be created: {name[:C.TRUNCA]}...")
             client_serializer.is_valid(raise_exception=True)
             client = client_serializer.save()
-            change = {"field": "client" , "old_value": "", "new_value": client.name}}
+            change = {"field": "client" , "old_value": "", "new_value": client.name}
             changed_fields.append(change)
 
     ## Handle Kind
@@ -160,7 +160,7 @@ def save(tender_data):
             helper.printMessage('DEBUG', 'm.save', f"+++ Procedure Type to be created: {name[:C.TRUNCA]}...")
             kind_serializer.is_valid(raise_exception=True)
             kind = kind_serializer.save()
-            change = {"field": "kind" , "old_value": "", "new_value": kind.name}}
+            change = {"field": "kind" , "old_value": "", "new_value": kind.name}
             changed_fields.append(change)
 
     ## Handle Mode
@@ -177,7 +177,7 @@ def save(tender_data):
             helper.printMessage('DEBUG', 'm.save', f"+++ Awarding Mode to be created: {name[:C.TRUNCA]}...")
             mode_serializer.is_valid(raise_exception=True)
             mode = mode_serializer.save()
-            change = {"field": "mode" , "old_value": "", "new_value": mode.name}}
+            change = {"field": "mode" , "old_value": "", "new_value": mode.name}
             changed_fields.append(change)
 
     ## Handle Procedure
@@ -194,7 +194,7 @@ def save(tender_data):
             helper.printMessage('DEBUG', 'm.save', f"+++ Procedure to be created: {name[:C.TRUNCA]}...")
             procedure_serializer.is_valid(raise_exception=True)
             procedure = procedure_serializer.save()
-            change = {"field": "procedure" , "old_value": "", "new_value": procedure.name}}
+            change = {"field": "procedure" , "old_value": "", "new_value": procedure.name}
             changed_fields.append(change)
 
 
@@ -211,7 +211,7 @@ def save(tender_data):
         for field, new_value in validated_data.items():
             current_value = getattr(tender, field)
             if current_value != new_value:
-                change = { "field": field , "old_value": str(current_value), "new_value": str(new_value)}}
+                change = { "field": field , "old_value": str(current_value), "new_value": str(new_value)}
                 changed_fields.append(change)                
         helper.printMessage('INFO', 'm.save', "+++ Tender already exists. Updating.")
     else:
@@ -241,7 +241,7 @@ def save(tender_data):
             domain = domain_serializer.save()
             
             if not tender_create:
-                change = {"field": "domain" , "old_value": "", "new_value": domain.name}}
+                change = {"field": "domain" , "old_value": "", "new_value": domain.name}
                 changed_fields.append(change)
         json_domain_keys.add((domain.name))
         RelDomainTender.objects.get_or_create(domain=domain, tender=tender)
@@ -257,7 +257,7 @@ def save(tender_data):
             helper.printMessage('DEBUG', 'm.save', f"#### Unlinking Tender {tender.chrono} and Domain {domain.name} ... ")
             RelDomainTender.objects.filter(domain=domain, tender=tender).delete()
             if not tender_create: 
-                change = {"field": "domain" , "old_value": domain.name, "new_value": ""}}
+                change = {"field": "domain" , "old_value": domain.name, "new_value": ""}
                 changed_fields.append(change)
 
 
@@ -301,7 +301,7 @@ def save(tender_data):
                 lot_category_serializer.is_valid(raise_exception=True)
                 lot_category = lot_category_serializer.save()
                 if not tender_create: 
-                    change = {"field": "category" , "old_value": "", "new_value": lot_category.label}}
+                    change = {"field": "category" , "old_value": "", "new_value": lot_category.label}
                     changed_fields.append(change)
 
         meetings_data = lot_data['meetings']
@@ -326,7 +326,7 @@ def save(tender_data):
             lot_serializer.is_valid(raise_exception=True)
             lot = lot_serializer.save(tender=tender)
             if not tender_create:
-                change = {"field": "lot" , "old_value": "", "new_value": lot.title}}
+                change = {"field": "lot" , "old_value": "", "new_value": lot.title}
                 changed_fields.append(change)
 
         json_lot_keys.add((lot.title, lot.number))
@@ -349,7 +349,7 @@ def save(tender_data):
                 meeting_serializer.is_valid(raise_exception=True)
                 meeting_serializer.save(lot=lot)
                 if not tender_create: 
-                    change = {"field": "meeting" , "old_value": "", "new_value": str(when)}}
+                    change = {"field": "meeting" , "old_value": "", "new_value": str(when)}
                     changed_fields.append(change)
 
         # Remove Meetings not in JSON
@@ -359,7 +359,7 @@ def save(tender_data):
         for when, description in meetings_to_remove:
             Meeting.objects.filter(when=when, description=description, lot=lot).delete()
             if not tender_create:
-                change = {"field": "meeting" , "old_value": str(when), "new_value": ""}}
+                change = {"field": "meeting" , "old_value": str(when), "new_value": ""}
                 changed_fields.append(change)
 
         # Handle Samples
@@ -380,7 +380,7 @@ def save(tender_data):
                 sample_serializer.is_valid(raise_exception=True)
                 sample_serializer.save(lot=lot)
                 if not tender_create: 
-                    change = {"field": "sample" , "old_value": "", "new_value": str(when)}}
+                    change = {"field": "sample" , "old_value": "", "new_value": str(when)}
                     changed_fields.append(change)
 
         # Remove Samples not in JSON
@@ -390,7 +390,7 @@ def save(tender_data):
         for when, description in samples_to_remove:
             Sample.objects.filter(when=when, description=description, lot=lot).delete()
             if not tender_create: 
-                change = {"field": "meeting" , "old_value": str(when), "new_value": ""}}
+                change = {"field": "sample" , "old_value": str(when), "new_value": ""}
                 changed_fields.append(change)
 
         # Handle Visits
@@ -411,7 +411,7 @@ def save(tender_data):
                 visit_serializer.is_valid(raise_exception=True)
                 visit_serializer.save(lot=lot)
                 if not tender_create: 
-                    change = {"field": "visit" , "old_value": "", "new_value": str(when)}}
+                    change = {"field": "visit" , "old_value": "", "new_value": str(when)}
                     changed_fields.append(change)
                     changed_fields.append(("", "", ))
 
@@ -422,7 +422,7 @@ def save(tender_data):
         for when, description in visits_to_remove:
             Visit.objects.filter(when=when, description=description, lot=lot).delete()
             if not tender_create: 
-                change = {"field": "visit" , "old_value": str(when), "new_value": ""}}
+                change = {"field": "visit" , "old_value": str(when), "new_value": ""}
                 changed_fields.append(change)
 
         # Handle Agrements (many-to-many)
@@ -441,7 +441,7 @@ def save(tender_data):
                 agrement_serializer.is_valid(raise_exception=True)
                 agrement = agrement_serializer.save()
                 if not tender_create: 
-                    change = {"field": "agrement" , "old_value": "", "new_value": agrement.name}}
+                    change = {"field": "agrement" , "old_value": "", "new_value": agrement.name}
                     changed_fields.append(change)
                     
             json_agrement_keys.add((agrement.short, agrement.name))
@@ -456,7 +456,7 @@ def save(tender_data):
             if agrement:
                 RelAgrementLot.objects.filter(agrement=agrement, lot=lot).delete()
                 if not tender_create: 
-                    change = {"field": "agrement" , "old_value": agrement.name, "new_value": ""}}
+                    change = {"field": "agrement" , "old_value": agrement.name, "new_value": ""}
                     changed_fields.append(change)
 
         # Handle Qualifs (many-to-many)
@@ -476,7 +476,7 @@ def save(tender_data):
                 qualif_serializer.is_valid(raise_exception=True)
                 qualif = qualif_serializer.save()
                 if not tender_create:
-                    change = {"field": "qualif" , "old_value": "", "new_value": qualif.name}}
+                    change = {"field": "qualif" , "old_value": "", "new_value": qualif.name}
                     changed_fields.append(change)
 
             json_qualif_keys.add((qualif.short, qualif.name))
@@ -491,7 +491,7 @@ def save(tender_data):
             if qualif:
                 RelQualifLot.objects.filter(qualif=qualif, lot=lot).delete()
                 if not tender_create:
-                    change = {"field": "qualif" , "old_value": qualif.name, "new_value": ""}}
+                    change = {"field": "qualif" , "old_value": qualif.name, "new_value": ""}
                     changed_fields.append(change)
 
         new_lots.append(lot)
@@ -503,7 +503,7 @@ def save(tender_data):
     for title, number in lots_to_remove:
         Lot.objects.filter(title=title, number=number, tender=tender).delete()
         if not tender_create:
-            change = {"field": "lot" , "old_value": title, "new_value": ""}}
+            change = {"field": "lot" , "old_value": title, "new_value": ""}
             changed_fields.append(change)
 
     # Log changed fields, if any
