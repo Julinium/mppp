@@ -11,7 +11,7 @@ import constants as C
 
 
 
-def printMessage(level='INFO', raiser='Main', message='!!! Empty Message !!!', before=0, after=0):
+def printMessage(level='---', raiser='---', message='!!! Empty Message !!!', before=0, after=0):
     """
     # Synopsis:
     Prints a message to the stdout, tagged with a level and current datetime.
@@ -26,10 +26,11 @@ def printMessage(level='INFO', raiser='Main', message='!!! Empty Message !!!', b
     # Return: nothing
     """
 
-    if level in C.LOGS_LEVELS and C.LOGS_LEVELS[level] >= C.VERBOSITY:
-        print(f'{before * "\n"}[{datetime.now(timezone.utc).strftime(C.LOG_TIME_FORMAT)}][{level}][{raiser}] {message}{after * "\n"}')
+    if level in C.LOGS_LEVELS: 
+        if C.LOGS_LEVELS[level] >= C.VERBOSITY:
+            print(f'{before * "\n"}[{datetime.now(timezone.utc).strftime(C.LOG_TIME_FORMAT)}][{level}][{raiser}] {message}{after * "\n"}')
     else:
-        print(f'{before * "\n"}[{datetime.now(timezone.utc).strftime(C.LOG_TIME_FORMAT)}][---][{raiser}] {message}{after * "\n"}')
+        print(f'{before * "\n"}[{datetime.now(timezone.utc).strftime(C.LOG_TIME_FORMAT)}][{level}][{raiser}] {message}{after * "\n"}')
 
 
 def getAmount(texte: str) -> Decimal:
@@ -145,18 +146,18 @@ def getDateTime(datetime_str):
 #     return localized_datetime.astimezone(pytz.UTC)
 
 
-def get_total_folder_size(folder_path):
-    total_size_bytes = 0
-    for dirpath, dirnames, filenames in os.walk(folder_path):
-        for filename in filenames:
-            file_path = os.path.join(dirpath, filename)
-            try:
-                if os.path.isfile(file_path):
-                    total_size_bytes += os.path.getsize(file_path)
-            except (OSError, PermissionError):
-                pass  # Skip files that can't be accessed
+# def get_total_folder_size(folder_path):
+#     total_size_bytes = 0
+#     for dirpath, dirnames, filenames in os.walk(folder_path):
+#         for filename in filenames:
+#             file_path = os.path.join(dirpath, filename)
+#             try:
+#                 if os.path.isfile(file_path):
+#                     total_size_bytes += os.path.getsize(file_path)
+#             except (OSError, PermissionError):
+#                 pass  # Skip files that can't be accessed
 
-    return total_size_bytes
+#     return total_size_bytes
 
 
 # def parseSize(size_str):

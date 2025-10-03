@@ -69,7 +69,7 @@ else:
     helper.printMessage('INFO', 'worker', f"Started getting DCE files for { c } items ...")
     for d in dceables:
         i += 1
-        helper.printMessage('INFO', 'worker', f"Getting DCE files for { i }/{ c } : { d.chrono } ...", 1)
+        helper.printMessage('INFO', 'worker', f"Getting DCE files for { i }/{ c } : { d.chrono } ...")
         getdce = downer.getDCE(d)
         if getdce == 0:
             dceed += 1
