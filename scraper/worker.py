@@ -2,6 +2,8 @@ import os, sys
 import django
 from datetime import datetime, timedelta
 
+from models import Agrement, Qualif
+
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(project_root)
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mppp.settings')
@@ -11,7 +13,6 @@ django.setup()
 
 import helper, linker, getter , merger, downer
 import constants as C
-
 
 started_time = datetime.now()
 
