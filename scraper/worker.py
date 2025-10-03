@@ -9,8 +9,6 @@ django.setup()
 
 
 
-import json
-
 import helper, linker, getter , merger, downer
 import constants as C
 
@@ -18,8 +16,8 @@ import constants as C
 started_time = datetime.now()
 
 helper.printBanner()
-helper.printMessage('INFO', 'worker', "========== The unlazy worker started working ==========", 1, 1)
-helper.printMessage('INFO', 'worker', F"Arguments: VERBOSITY={C.VERBOSITY}, IMPORT_LINKS={C.IMPORT_LINKS}, REFRESH_EXISTING={C.REFRESH_EXISTING}", 0, 3)
+helper.printMessage('===', 'worker', "========== The unlazy worker started working ==========", 1, 1)
+helper.printMessage('===', 'worker', F"Arguments: VERBOSITY={C.VERBOSITY}, IMPORT_LINKS={C.IMPORT_LINKS}, REFRESH_EXISTING={C.REFRESH_EXISTING}", 0, 3)
 
 links = []
 if not C.IMPORT_LINKS:
@@ -58,37 +56,40 @@ if ll > 0:
 else:
     helper.printMessage('ERROR', 'worker', "========== Links list was empty ==========", 2, 3)
 
-helper.printMessage('INFO', 'worker', f"Saving data finished.", 2, 1)
+helper.printMessage('===', 'worker', f"Saving data finished.", 1)
 
 dceed, fceed = 0, 0
 if C.SKIP_DCE:
-    helper.printMessage('INFO', 'worker', "SKIP_DCE set. Skipping DCE files.")
+    helper.printMessage('===', 'worker', "SKIP_DCE set. Skipping DCE files.")
 else:
     i = 0
-    helper.printMessage('INFO', 'worker', "Getting the list of DCE files to download ...", 2, 1)
+    helper.printMessage('INFO', 'worker', "Getting the list of DCE files to download ...", 1)
     dceables = downer.getFileables()
     c = dceables.count()
     helper.printMessage('INFO', 'worker', f"Started getting DCE files for { c } items ...")
     for d in dceables:
         i += 1
-        helper.printMessage('INFO', 'worker', f"Getting DCE files for { i }/{ c } : { d.chrono } ...", 2)
+        helper.printMessage('INFO', 'worker', f"Getting DCE files for { i }/{ c } : { d.chrono } ...", 1)
         getdce = downer.getDCE(d)
         if getdce == 0:
             dceed += 1
+            helper.printMessage('INFO', 'worker', f"DCE download for { d.chrono } was successfull.", 1)
         else:
             fceed += 1
+            helper.printMessage('WARN', 'worker', f"Something went wrong whith DCE download for { d.chrono }.", 1)
 
         hceed = dceed + fceed
         if hceed > 0:
             if hceed % C.BURST_LENGTH == 0:
                 helper.printMessage('INFO', 'worker', "Sleeping for a while.", 1)
                 helper.sleepRandom(10, 30)
-    helper.printMessage('INFO', 'worker', f"Downloaded DCE files for {dceed} items", 2)
+    helper.printMessage('INFO', 'worker', f"Downloaded DCE files for {dceed} items")
+    helper.printMessage('INFO', 'worker', f"Failed to downloaded DCE files for {fceed} items")
 
 
 finished_time = datetime.now()
 it_took = finished_time - started_time
 
-helper.printMessage('INFO', 'worker', f"Created {created}, updated {updated} Tenders. Downloaded {dceed} DCE files, {fceed} downloads failed.", 2)
-helper.printMessage('INFO', 'worker', f"That took our unlazy worker { it_took }.")
-helper.printMessage('INFO', 'worker', f"============ The unlazy worker is done working ============", 1, 1)
+helper.printMessage('===', 'worker', f"Created {created}, updated {updated} Tenders. Downloaded {dceed} DCE files, {fceed} downloads failed.", 2)
+helper.printMessage('===', 'worker', f"That took our unlazy worker { it_took }.")
+helper.printMessage('===', 'worker', f"============ The unlazy worker is done working ============", 1, 1)
