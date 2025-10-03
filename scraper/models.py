@@ -1,5 +1,5 @@
 
-import uuid, traceback
+import uuid, traceback, re
 
 from os import path as path
 from django.db import models
@@ -24,11 +24,16 @@ class Agrement(models.Model):
 
     def save(self, *args, **kwargs):
         try:
-            if self.name.find("-") > -1:
-                self.short = self.name.split("-")[0].strip()
+            self.short = re.split(r'[.-]', s, maxsplit=1)[0]
+            # return parts  # Returns only the first part
+
+
+        # try:
+        #     if self.name.find("-") > -1:
+        #         self.short = self.name.split("-")[0].strip()
         except Exception as x:
             self.short = None
-            helper.printMessage('ERROR', 'models', 'An exception was raised trying to format fields.')
+            # helper.printMessage('ERROR', 'models', 'An exception was raised trying to format fields.')
             traceback.print_exc()
         
         return super().save(*args, **kwargs)
