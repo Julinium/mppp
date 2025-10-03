@@ -24,6 +24,14 @@ from scraper.models import Tender, FileToGet
 
 
 def getFileables():
+    """
+    Get a list of Tenders that need DCE to be downloaded.
+    That are either Tenders with an open FilesToGet insatnce, or
+    Tenders with empty DCE folders or no DCE folder at all.
+
+    # Return: Tender model QuerySet.
+    """
+
     helper.printMessage("DEBUG", 'd.getFileables', "Getting fresh Tenders (created or recently updated) ...")
     fresh_tenders = Tender.objects.filter(files_to_get__closed=False).distinct()
     helper.printMessage("DEBUG", 'd.getFileables', f"Got {fresh_tenders.count()} fresh Tenders.")
@@ -35,6 +43,11 @@ def getFileables():
 
 
 def getEmpties(past_days=C.CLEAN_DCE_AFTER_DAYS, batch_size=1000):
+    """
+    Get Tenders with empty DCE folders or no DCE folder at all.
+
+    # Return: Tender model QuerySet.
+    """    
 
     helper.printMessage("DEBUG", 'd.getEmpties', f"Getting Tenders with deadline older than {past_days} days ...")
     target_date = datetime.now() - timedelta(days=past_days)
@@ -52,12 +65,24 @@ def getEmpties(past_days=C.CLEAN_DCE_AFTER_DAYS, batch_size=1000):
     helper.printMessage("DEBUG", 'd.getEmpties', f"Found {current_tenders.count()} items ...")
 
 def is_empty_or_nonexistent(folder_path):
+    """
+    Check if a folder_path is empty or does not exist.
+    # Return: Boolean
+    """
+
     if not os.path.exists(folder_path):
         return True
     return not any(os.path.isfile(os.path.join(folder_path, item)) for item in os.listdir(folder_path))
 
 
 def getDCE(tender):
+    """
+    The real job of downloading the DCE for a Tender and saving it to the local storage#
+    # Arguments:
+        ## Tender instance.
+    # Return: Integer: 0 if success, 1 else.
+    """
+
     chrono = tender.chrono
     acro   = tender.acronym
 
