@@ -54,13 +54,13 @@ if ll > 0:
                 helper.printMessage('INFO', 'worker', "Sleeping for a while.", 1)
                 helper.sleepRandom(10, 30)
 else:
-    helper.printMessage('ERROR', 'worker', "========== Links list was empty ==========", 2, 3)
+    helper.printMessage('ERROR', 'worker', "========== Links list was empty ==========", 2)
 
 helper.printMessage('===', 'worker', f"Saving data finished.", 1)
 
 dceed, fceed = 0, 0
 if C.SKIP_DCE:
-    helper.printMessage('===', 'worker', "SKIP_DCE set. Skipping DCE files.")
+    helper.printMessage('===', 'worker', "SKIP_DCE set. Skipping DCE files.", 2)
 else:
     i = 0
     helper.printMessage('INFO', 'worker', "Getting the list of DCE files to download ...", 1)
@@ -83,7 +83,7 @@ else:
             if hceed % C.BURST_LENGTH == 0:
                 helper.printMessage('INFO', 'worker', "Sleeping for a while.", 1)
                 helper.sleepRandom(10, 30)
-    helper.printMessage('INFO', 'worker', f"Downloaded DCE files for {dceed} items")
+    helper.printMessage('INFO', 'worker', f"Downloaded DCE files for {dceed} items", 2)
     helper.printMessage('INFO', 'worker', f"Failed to downloaded DCE files for {fceed} items")
 
 
