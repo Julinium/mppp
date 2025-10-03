@@ -413,7 +413,6 @@ def save(tender_data):
                 if not tender_create: 
                     change = {"field": "visit" , "old_value": "", "new_value": str(when)}
                     changed_fields.append(change)
-                    changed_fields.append(("", "", ))
 
         # Remove Visits not in JSON
         helper.printMessage('TRACE', 'm.save', "#### Handling Visits relationships ... ")
