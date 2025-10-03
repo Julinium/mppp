@@ -36,14 +36,6 @@ def getFileables():
 
 def getEmpties(past_days=C.CLEAN_DCE_AFTER_DAYS, batch_size=1000):
 
-    ##########################################
-    from scraper.models import Agrement
-    gs = Agrement.objects.all()
-    for g in gs:
-        print("------------------")
-        g.save()
-    ##########################################
-
     helper.printMessage("DEBUG", 'd.getEmpties', f"Getting Tenders with deadline older than {past_days} days ...")
     target_date = datetime.now() - timedelta(days=past_days)
     current_tenders = Tender.objects.filter(deadline__gte=target_date)
