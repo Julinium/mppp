@@ -72,7 +72,6 @@ def getDCE(tender):
     def make_link(type=None):
         if type == 'query': return f'{C.SITE_INDEX}?page=entreprise.EntrepriseDemandeTelechargementDce&refConsultation={chrono}&orgAcronyme={acro}'
         if type == 'file': return f'{C.SITE_INDEX}?page=entreprise.EntrepriseDownloadCompleteDce&reference={chrono}&orgAcronym={acro}'
-        # return f'{C.SITE_INDEX}?page=entreprise.EntrepriseDetailsConsultation&refConsultation={chrono}&orgAcronyme={acro}'
         return None
 
     def get_filename(cd):
@@ -101,7 +100,6 @@ def getDCE(tender):
         helper.printMessage('DEBUG', 'd.getDCE', f'UA list was empty. Using default: {DEFAULT_UA}.')
         headino = {"User-Agent": DEFAULT_UA}
     else :
-        # rua = C.USER_AGENTS[random.randint(0, len(C.USER_AGENTS)-1)]
         rua = helper.getUa()
         rua_label = "Random"
         try:
@@ -119,7 +117,6 @@ def getDCE(tender):
     http_session = requests.Session()
 
     url_query = make_link('query')
-    # url_form = url_query
     url_file = make_link('file')
     
     helper.printMessage('DEBUG', 'd.getDCE', 'Building Tender and files links.')
@@ -216,7 +213,6 @@ def getDCE(tender):
         helper.printMessage('WARN', 'd.getDCE', str(xc))
         helper.printMessage('ERROR', 'd.getDCE', 'Looks like the server sent back a page, not a file !')
         return 1
-        # filename_cd = f"CONS-{chrono}.zip"
 
     fiel_name_base = os.path.splitext(filename_cd)[0]
     file_extension = os.path.splitext(filename_cd)[1]
