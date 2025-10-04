@@ -1,7 +1,7 @@
 import traceback
 from rest_framework import serializers
 from django.db import transaction
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 import constants as C
 import helper
@@ -507,8 +507,10 @@ def save(tender_data):
             changed_fields.append(change)
 
     # Log changed fields, if any
-    target_date = datetime.now() - timedelta(days=C.CLEAN_DCE_AFTER_DAYS)
-    
+    target_date = naive_utc - timedelta(days=C.CLEAN_DCE_AFTER_DAYS)
+    target_date = target_date.date()
+    tender_date = tender.deadline.date()
+
     if changed_fields:
         try:
             helper.printMessage('TRACE', 'm.save', "#### Saving change record to databse ... ")
@@ -521,7 +523,7 @@ def save(tender_data):
             helper.printMessage('WARN', 'm.save', "---- Exception raised saving change to database.")
             traceback.print_exc()
 
-        if tender.deadline > target_date:
+        if tender_date > target_date:
             try:
                 helper.printMessage('TRACE', 'm.save', f"#### Adding DCE request for Tender {tender.chrono} ... ")
                 f2d = FileToGet(tender=tender, reason="Updated")
@@ -531,8 +533,8 @@ def save(tender_data):
                 traceback.print_exc()
 
     
-    if tender_create:        
-        if tender.deadline > target_date:
+    if tender_create:
+        if tender_date > target_date:
             try:
                 helper.printMessage('TRACE', 'm.save', "#### Adding DCE request for Tender ... ")
                 f2d = FileToGet(tender=tender)
