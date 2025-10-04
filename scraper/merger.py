@@ -507,6 +507,8 @@ def save(tender_data):
             changed_fields.append(change)
 
     # Log changed fields, if any
+    target_date = datetime.now() - timedelta(days=C.CLEAN_DCE_AFTER_DAYS)
+    
     if changed_fields:
         try:
             helper.printMessage('TRACE', 'm.save', "#### Saving change record to databse ... ")
@@ -519,7 +521,6 @@ def save(tender_data):
             helper.printMessage('WARN', 'm.save', "---- Exception raised saving change to database.")
             traceback.print_exc()
 
-        target_date = datetime.now() - timedelta(days=C.CLEAN_DCE_AFTER_DAYS)
         if tender.deadline > target_date:
             try:
                 helper.printMessage('TRACE', 'm.save', f"#### Adding DCE request for Tender {tender.chrono} ... ")
@@ -528,11 +529,9 @@ def save(tender_data):
             except:
                 helper.printMessage('WARN', 'm.save', "---- Exception raised saving DCE request.")
                 traceback.print_exc()
-        
 
     
-    if tender_create:
-        target_date = datetime.now() - timedelta(days=C.CLEAN_DCE_AFTER_DAYS)
+    if tender_create:        
         if tender.deadline > target_date:
             try:
                 helper.printMessage('TRACE', 'm.save', "#### Adding DCE request for Tender ... ")
