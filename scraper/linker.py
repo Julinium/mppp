@@ -14,8 +14,9 @@ def fillSearchForm(driver, back_days=C.PORTAL_DDL_PAST_DAYS):
     dt_ddl_start = assa - timedelta(days=back_days)
     date_ddl_start = dt_ddl_start.strftime("%d/%m/%Y")
 
-    helper.printMessage('DEBUG', 'l.fillSearchForm', 'Submitting search form with default dates and empty terms ...')
+    helper.printMessage('INFO', 'l.fillSearchForm', 'Submitting search form ...')
     try:
+        helper.printMessage('INFO', 'l.page2Links', f'Deadline backward days set to {C.PORTAL_DDL_PAST_DAYS} days.', 2)
         el_ddl_start = driver.find_element("id", "ctl0_CONTENU_PAGE_AdvancedSearch_dateMiseEnLigneStart")
         el_ddl_start.clear()
         el_ddl_start.send_keys(date_ddl_start)
