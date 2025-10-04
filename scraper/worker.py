@@ -18,7 +18,7 @@ started_time = datetime.now()
 
 helper.printBanner()
 helper.printMessage('===', 'worker', "========== The unlazy worker started working ==========", 1, 1)
-helper.printMessage('===', 'worker', F"Arguments: VERBOSITY={C.VERBOSITY}, IMPORT_LINKS={C.IMPORT_LINKS}, REFRESH_EXISTING={C.REFRESH_EXISTING}", 0, 3)
+helper.printMessage('===', 'worker', f"Args: VERBOSITY={C.VERBOSITY}, IMPORT_LINKS={C.IMPORT_LINKS}, SKIP_DCE={C.SKIP_DCE}", 0, 3)
 
 links = []
 if not C.IMPORT_LINKS:

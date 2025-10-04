@@ -26,14 +26,15 @@ from scraper.models import Tender, FileToGet
 def getFileables():
     """
     Get a list of Tenders that need DCE to be downloaded.
-    That are either Tenders with an open FilesToGet insatnce, or
+    That are either Tenders with an open FilesToGet insatnce (recently created or updated), or
     Tenders with empty DCE folders or no DCE folder at all.
 
     # Return: Tender model QuerySet.
     """
 
+    target_date = datetime.now() - timedelta(days=C.CLEAN_DCE_AFTER_DAYS)
     helper.printMessage("DEBUG", 'd.getFileables', "Getting fresh Tenders (created or recently updated) ...")
-    fresh_tenders = Tender.objects.filter(files_to_get__closed=False).distinct()
+    fresh_tenders = Tender.objects.filter(files_to_get__closed=False, deadline__gte=target_date).distinct()
     helper.printMessage("DEBUG", 'd.getFileables', f"Got {fresh_tenders.count()} fresh Tenders.")
     helper.printMessage("DEBUG", 'd.getFileables', "Getting Tenders with no or empty DCE folders ...")
     nodce_tenders = getEmpties().distinct()

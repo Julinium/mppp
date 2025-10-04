@@ -3,4 +3,13 @@ __pycache__/
 .env*
 mppp/migrations/
 .tmp
+
 scraper/tester.py
+scraper/migrations/
+scraper/.env*
+scraper/__pycache__/
+scraper/exports/
+scraper/logs/
+scraper/.venv/
+scraper/crony/
+scraper/media/

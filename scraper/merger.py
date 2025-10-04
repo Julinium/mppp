@@ -1,6 +1,7 @@
 import traceback
 from rest_framework import serializers
 from django.db import transaction
+from datetime import datetime, timedelta
 
 import constants as C
 import helper
@@ -517,24 +518,29 @@ def save(tender_data):
         except:
             helper.printMessage('WARN', 'm.save', "---- Exception raised saving change to database.")
             traceback.print_exc()
-        try:
-            helper.printMessage('TRACE', 'm.save', f"#### Adding DCE request for Tender {tender.chrono} ... ")
-            f2d = FileToGet(tender=tender, reason="Updated")
-            f2d.save()
-        except:
-            helper.printMessage('WARN', 'm.save', "---- Exception raised saving DCE request.")
-            traceback.print_exc()
+
+        target_date = datetime.now() - timedelta(days=C.CLEAN_DCE_AFTER_DAYS)
+        if tender.deadline > target_date:
+            try:
+                helper.printMessage('TRACE', 'm.save', f"#### Adding DCE request for Tender {tender.chrono} ... ")
+                f2d = FileToGet(tender=tender, reason="Updated")
+                f2d.save()
+            except:
+                helper.printMessage('WARN', 'm.save', "---- Exception raised saving DCE request.")
+                traceback.print_exc()
         
 
     
     if tender_create:
-        try:
-            helper.printMessage('TRACE', 'm.save', "#### Adding DCE request for Tender ... ")
-            f2d = FileToGet(tender=tender)
-            f2d.save()
-        except:
-            helper.printMessage('WARN', 'm.save', "---- Exception raised saving DCE request.")
-            traceback.print_exc()
+        target_date = datetime.now() - timedelta(days=C.CLEAN_DCE_AFTER_DAYS)
+        if tender.deadline > target_date:
+            try:
+                helper.printMessage('TRACE', 'm.save', "#### Adding DCE request for Tender ... ")
+                f2d = FileToGet(tender=tender)
+                f2d.save()
+            except:
+                helper.printMessage('WARN', 'm.save', "---- Exception raised saving DCE request.")
+                traceback.print_exc()
     else: # Update return boolean: True=Created, False=Updated, None=None
         if len(changed_fields) == 0:
             helper.printMessage('INFO', 'm.save', f"No change was found for {tender.chrono}" )
