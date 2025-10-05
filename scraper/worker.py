@@ -33,16 +33,16 @@ helper.printMessage('DEBUG', 'worker', f"Count of links to handle: {ll} ...", 1)
 created, updated = 0 , 0
 if ll > 0:
     i = 0
-    helper.printMessage('INFO', 'worker', f"Getting Data for {ll} links ... ", 0, 1)
+    helper.printMessage('INFO', 'worker', f"Getting Data for {ll} links ... ")
     # links =  reversed(links) # Browse links in reverse order.
     for l in links:
         handled = created + updated
         i += 1
-        helper.printMessage('INFO', 'worker', f"Getting Data for link {i:03}/{ll:03}", 1)
+        helper.printMessage('DEBUG', 'worker', f"Getting Data for link {i:03}/{ll:03}",)
         jsono = getter.getJson(l, not C.REFRESH_EXISTING)
         if jsono:
             tender, creation_mode = merger.save(jsono)
-            if creation_mode == True: 
+            if creation_mode == True:
                 created += 1
                 helper.printMessage('INFO', 'worker', f"Created Tender {tender.chrono}")
             elif creation_mode == False: 
@@ -67,17 +67,17 @@ else:
     helper.printMessage('INFO', 'worker', "Getting the list of DCE files to download ...", 1)
     dceables = downer.getFileables()
     c = dceables.count()
-    helper.printMessage('INFO', 'worker', f"Started getting DCE files for { c } items ...")
+    helper.printMessage('INFO', 'worker', f"Started getting DCE files for { c } items ...", 1)
     for d in dceables:
         i += 1
-        helper.printMessage('INFO', 'worker', f"Getting DCE files for { i }/{ c } : { d.chrono } ...")
+        helper.printMessage('INFO', 'worker', f"Getting DCE files for { i }/{ c } : { d.chrono } ...", 1, 1)
         getdce = downer.getDCE(d)
         if getdce == 0:
             dceed += 1
-            helper.printMessage('INFO', 'worker', f"DCE download for { d.chrono } was successfull.", 1)
+            helper.printMessage('INFO', 'worker', f"DCE download for { d.chrono } was successfull.")
         else:
             fceed += 1
-            helper.printMessage('WARN', 'worker', f"Something went wrong whith DCE download for { d.chrono }.", 1)
+            helper.printMessage('WARN', 'worker', f"Something went wrong whith DCE download for { d.chrono }.")
 
         hceed = dceed + fceed
         if hceed > 0:
