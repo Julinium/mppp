@@ -149,7 +149,7 @@ def getDCE(tender):
     soup = BeautifulSoup(request_query.content, 'html.parser')
     
     if request_query.status_code != 200 : 
-        helper.printMessage('ERROR', 'd.getDCE', f'Download query: Response Status Code: {request_file.status_code} !')
+        helper.printMessage('ERROR', 'd.getDCE', f'Download query: Response Status Code: {request_query.status_code} !')
         helper.printMessage('TRACE', 'd.getDCE', f'\n\n\n===========\n{soup}\n===========\n\n')
         
         helper.sleepRandom(C.SLEEP_4XX_MIN, C.SLEEP_4XX_MAX)
