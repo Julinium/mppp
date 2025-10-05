@@ -244,7 +244,6 @@ def getDCE(tender):
         with open(filename, 'wb') as file:
             bytes_written = file.write(request_file.content)
             helper.printMessage('DEBUG', 'd.getDCE', f'... Bytes written: {bytes_written}/{len(request_file.content)}.')
-
         # Verify the file size
         if bytes_written == len(request_file.content):
             try:
@@ -255,7 +254,6 @@ def getDCE(tender):
             except Exception as x:
                 helper.printMessage('ERROR', 'd.getDCE', "Exception removing file request.")
                 traceback.print_exc()
-
             if tender.size_bytes != bytes_written:
                 try:
                     helper.printMessage('DEBUG', 'd.getDCE', f'Updating file size bytes for {chrono}.')
@@ -266,7 +264,6 @@ def getDCE(tender):
                     traceback.print_exc()                
             else:
                 helper.printMessage('DEBUG', 'd.getDCE', f'File size bytes for id {chrono} was the same.')
-            
         else:
             raise IOError("File size mismatch: Not all content was written.")
         if os.path.getsize(filename) == 0: raise IOError("File was created but is empty. Go and know why!")

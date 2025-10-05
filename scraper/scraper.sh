@@ -24,6 +24,7 @@ if test -e "$_lock_file"; then
     echo "Another script is probably running or did not finish as expected." >> "$_logs_file"
     echo "The lock file will be removed on next boot. It can also be removed manually." >> "$_logs_file"
 else
+    echo "Lock file $_lock_file was not found." >> "$_logs_file"
     touch $_lock_file
     cd $SCRIPT_DIR
     echo "Working directory: $(pwd)" >> "$_logs_file"
@@ -33,8 +34,9 @@ else
     deactivate
     echo "Script finished executing. See logs and system journal for details." >> "$_logs_file"
     if test -e "$_lock_file"; then
-        echo "Trying to remove Lock file after script finished." >> "$_logs_file"
+        echo "Script finished. Trying to remove Lock file." >> "$_logs_file"
         rm -f -- $_lock_file
+        echo "Removed Lock file." >> "$_logs_file"
     fi
 fi
 
