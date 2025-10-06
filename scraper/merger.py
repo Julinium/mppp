@@ -212,8 +212,9 @@ def save(tender_data):
         for field, new_value in validated_data.items():
             current_value = getattr(tender, field)
             if current_value != new_value:
-                change = { "field": field , "old_value": str(current_value), "new_value": str(new_value)}
-                changed_fields.append(change)                
+                if field != size_bytes or new_value != None:
+                    change = { "field": field , "old_value": str(current_value), "new_value": str(new_value)}
+                    changed_fields.append(change)
         helper.printMessage('INFO', 'm.save', "+++ Tender already exists. Updating.")
     else:
         tender_serializer = TenderSerializer(data=validated_data)
