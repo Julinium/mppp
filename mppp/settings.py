@@ -33,6 +33,20 @@ INSTALLED_APPS = [
 
     'mppp',
     'scraper',
+    
+    # 'dotenv',
+    # 'djqscsv',
+    'allauth',
+    'allauth.account',
+    # 'widget_tweaks',
+    # 'requests',
+    # 'slugify',
+    # 'bs4',
+    # 'axes',
+    # 'django_countries',
+    # 'bootstrap_admin',
+    
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
