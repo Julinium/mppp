@@ -200,7 +200,6 @@ def save(tender_data):
 
 
     # Step x: Create or update Tender
-    # changed_fields = []
     
     chrono = validated_data.get('chrono')
     tender = None
