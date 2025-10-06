@@ -4,7 +4,8 @@ __pycache__/
 mppp/migrations/
 .tmp
 
-scraper/tester.py
+crm/migrations/
+
 scraper/migrations/
 scraper/.env*
 scraper/__pycache__/
