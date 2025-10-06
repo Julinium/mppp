@@ -33,6 +33,8 @@ INSTALLED_APPS = [
 
     'mppp',
     'scraper',
+
+    'crm',
     
     # 'dotenv',
     # 'djqscsv',
@@ -57,6 +59,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
+    'allauth.account.middleware.AccountMiddleware must be added to settings.MIDDLEWARE',
 ]
 
 ROOT_URLCONF = 'mppp.urls'
